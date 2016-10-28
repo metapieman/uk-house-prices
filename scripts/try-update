@@ -1,0 +1,34 @@
+#! /bin/bash
+
+set -x
+
+YEAR=$1
+
+SHA_BEFORE=''
+if [ -f pp-$YEAR.csv ]; then
+    SHA_BEFORE=$(sha256sum pp-$YEAR.csv | cut -d ' ' -f 1)
+fi
+
+URL=http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com
+FNAME=$YEAR_$(date +%Y%m%d_%H:%M:%S)
+wget -N $URL/pp-$YEAR.csv
+
+if [ ! $? = 0 ]; then
+    echo "try-update: wget command failed, deleting pp-$YEAR.csv in "\
+         "case it is malformed" >&2
+    [ -f pp-$YEAR.csv ] && rm -f pp-$YEAR.csv
+    exit 1
+fi
+
+if [ ! -f pp-$YEAR.csv ]; then
+    echo "pp-"$YEAR".csv does not exist after wget" >&2
+    exit 1
+fi
+
+SHA_AFTER=$(sha256sum pp-$YEAR.csv | cut -d ' ' -f 1)
+
+# If file has changed, backup the new one
+if [ ! "$SHA_BEFORE" = "$SHA_AFTER" ]; then
+    mkdir -p ../backups
+    cp -a pp-$YEAR.csv ../backups/pp-$YEAR-$(date +%Y%m%d_%H:%M:%S).csv
+fi
