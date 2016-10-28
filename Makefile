@@ -33,6 +33,7 @@ data/summaries_by_year/%.csv:  data/latest/pp-%.csv
 
 
 data/latest/pp-%.csv:  TRY_UPDATE_%
+	@echo making $@
 
 # E.g.: make TRY_UPDATE_2016
 .PHONY: TRY_UPDATE_%
