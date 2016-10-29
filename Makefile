@@ -4,11 +4,12 @@ SHELL := /bin/bash
 
 ALL_YEARS=$(shell ./scripts/all-years)
 
-plots/london_period_flats.pdf plots/london_period_houses.pdf:  data/summaries_by_stat/median.csv
+# E.g.: make plots/london_period_flats_median.pdf
+plots/london_period_flats_%.pdf plots/london_period_houses_%.pdf:  data/summaries_by_stat/%.csv
 	mkdir -p plots
-	Rscript scripts/plot-london.R
-	mv plots/london_period_flats.tmp.pdf plots/london_period_flats.pdf
-	mv plots/london_period_houses.tmp.pdf plots/london_period_houses.pdf
+	Rscript scripts/plot-london.R $*
+	mv plots/london_period_flats_$*.tmp.pdf plots/london_period_flats_$*.pdf
+	mv plots/london_period_houses_$*.tmp.pdf plots/london_period_houses_$*.pdf
 	-rm Rplots.pdf
 
 ALL_YEARLY_SUMMARY_FILES=$(foreach year,$(ALL_YEARS),data/summaries_by_year/$(year).csv)
@@ -32,8 +33,8 @@ data/summaries_by_year/%.csv:  data/latest/pp-%.csv
 	mv $@.tmp $@
 
 
-data/latest/pp-%.csv:  TRY_UPDATE_%
-	@echo making $@
+# data/latest/pp-%.csv:  TRY_UPDATE_%
+# 	@echo making $@
 
 # E.g.: make TRY_UPDATE_2016
 .PHONY: TRY_UPDATE_%

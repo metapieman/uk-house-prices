@@ -3,7 +3,11 @@
 library(dplyr)
 library(ggplot2)
 
-data <- read.csv('data/summaries_by_stat/median.csv')
+args <- commandArgs(trailingOnly=TRUE)
+stat <- args[1]
+datafile <- sprintf("data/summaries_by_stat/%s.csv", args[1])
+
+data <- read.csv(datafile)
 data$Month <- as.Date(data$Month)
 
 london_period <-
@@ -56,10 +60,10 @@ ggplot(london_period_flats, aes(x=Month, y=Price)) +
   geom_line(aes(color=Type)) +
   facet_wrap(~LocalAuthority, scales="free")
 
-ggsave('plots/london_period_flats.tmp.pdf', width=width, height=height)
+ggsave(sprintf('plots/london_period_flats_%s.tmp.pdf', stat), width=width, height=height)
 
 ggplot(london_period_houses, aes(x=Month, y=Price)) +
   geom_line(aes(color=Type)) +
   facet_wrap(~LocalAuthority, scales="free")
 
-ggsave('plots/london_period_houses.tmp.pdf', width=width, height=height)
+ggsave(sprintf('plots/london_period_houses_%s.tmp.pdf', stat), width=width, height=height)
