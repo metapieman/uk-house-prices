@@ -7,6 +7,12 @@ ALL_YEARS=$(shell ./scripts/all-years)
 ALL_REDUCED_FILES=$(foreach year,$(ALL_YEARS),data/reduced/$(year).csv)
 REDUCED_FILES: $(ALL_REDUCED_FILES)
 
+# E.g.: make data/index_data/UK_20160101_20160201.csv
+data/index_data/%.csv:   data/index_data/multisales.csv.gz
+	mkdir -p data/index
+	zcat $< | scripts/create-index.py $* > $@.tmp
+	mv $@.tmp $@
+
 data/index_data/multisales.csv.gz: data/reduced/all.csv.gz
 	mkdir -p data/index_data
 	zcat $< | scripts/get-multisales.py | gzip > $@.tmp
@@ -52,10 +58,6 @@ data/summaries_by_year/%.csv:  data/latest/pp-%.csv
 	mkdir -p data/summaries_by_year
 	./scripts/write_summary.py $< ./header.csv  > $@.tmp
 	mv $@.tmp $@
-
-
-# data/latest/pp-%.csv:  TRY_UPDATE_%
-# 	@echo making $@
 
 # E.g.: make TRY_UPDATE_2016
 .PHONY: TRY_UPDATE_%

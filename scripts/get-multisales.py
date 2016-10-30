@@ -11,7 +11,7 @@ for line in sys.stdin:
     values = line.split(',')[:n_cols_to_compare]
     if values != previous_address:
         if n_seen != 1:
-            sys.stdout.write(' '.join(previous_address) + ',')
+            sys.stdout.write(','.join(previous_address) + ',')
             price_data = []
             for line in addresses:
                 values = line.rstrip().split(',')
