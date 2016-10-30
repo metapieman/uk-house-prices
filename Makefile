@@ -20,7 +20,7 @@ data/reduced/all.csv.gz:  $(ALL_REDUCED_FILES)
 # These files are sorted, for easy merging.
 data/reduced/%.csv:  data/latest/pp-%.csv
 	mkdir -p data/reduced
-	scripts/reduce-data.py $< ./header.csv >$@.tmp
+	scripts/reduce-data.py $< ./header.csv | sed 's/ 00:00//g'>$@.tmp
 	sort $@.tmp > $@.tmp.sorted
 	mv $@.tmp.sorted $@
 	rm $@.tmp
