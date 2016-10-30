@@ -4,6 +4,27 @@ SHELL := /bin/bash
 
 ALL_YEARS=$(shell ./scripts/all-years)
 
+ALL_REDUCED_FILES=$(foreach year,$(ALL_YEARS),data/reduced/$(year).csv)
+REDUCED_FILES: $(ALL_REDUCED_FILES)
+
+data/index_data/multisales.csv.gz: data/reduced/all.csv.gz
+	mkdir -p data/index_data
+	zcat $< | scripts/get-multisales.py | gzip > $@.tmp
+	mv $@.tmp $@
+
+data/reduced/all.csv.gz:  $(ALL_REDUCED_FILES)
+	sort --merge $^ | gzip > $@.tmp
+	mv $@.tmp $@
+
+# E.g.:make data/addresses/2015.txt
+# These files are sorted, for easy merging.
+data/reduced/%.csv:  data/latest/pp-%.csv
+	mkdir -p data/reduced
+	scripts/reduce-data.py $< ./header.csv >$@.tmp
+	sort $@.tmp > $@.tmp.sorted
+	mv $@.tmp.sorted $@
+	rm $@.tmp
+
 # E.g.: make plots/london_period_flats_median.pdf
 plots/london_period_flats_%.pdf plots/london_period_houses_%.pdf:  data/summaries_by_stat/%.csv
 	mkdir -p plots
