@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import csv
 import datetime as dt
 import sys
 
@@ -18,11 +19,10 @@ address_predicate = {
     'UK' : in_UK,
 }[region]
 
-for line in sys.stdin:
-    values = line.rstrip().split(',')
+for values in csv.reader(sys.stdin, delimiter=','):
     address = values[:4]
     price_info = values[4:]
-    assert len(price_info) %2 == 0
+    assert len(price_info) %2 == 0, '%s'% str(values)
     if address_predicate(address):
         dates = []
         prices = []
@@ -40,7 +40,11 @@ for line in sys.stdin:
             date_indices = [0]
             interpolated_prices = [[dates[0], prices[0]]]
             last_sale_date = dates[-1]
+            start_date_index = None
+            end_date_index = None
             while interpolated_prices[-1][0] != last_sale_date:
+                if interpolated_prices[-1][0] == start_date:
+                    start_date_index = len(interpolated_prices) - 1
                 new_date = interpolated_prices[-1][0] + dt.timedelta(days=1)
                 price = None
                 if new_date in dates:
@@ -48,6 +52,8 @@ for line in sys.stdin:
                 interpolated_prices.append([new_date, price])
                 if new_date == dates[len(date_indices)]:
                     date_indices.append(len(interpolated_prices) - 1)
+                if interpolated_prices[-1][0] == end_date:
+                    end_date_index = len(interpolated_prices) - 1
             for price1, price2, index1, index2 in zip(prices[:-1], prices[1:],
                                                   date_indices[:-1], date_indices[1:]):
                 factor = (float(price2)/price1)**(1.0/(index2 - index1))
