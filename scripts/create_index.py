@@ -13,13 +13,14 @@ import sys
 first_date = dt.datetime.strptime('20050101', '%Y%m%d').date()
 last_date  = dt.date.today()
 n_all_dates = (last_date - first_date).days
-all_dates = [first_date + dt.timedelta(i) for i in xrange(n_all_dates)]
+all_dates = [int((first_date + dt.timedelta(i)).strftime('%Y%m%d'))
+             for i in xrange(n_all_dates)]
 
 interp_prices = [None for d in all_dates]
 
 def run(input_fname, output_fname, region, start, end):
-    start_date = dt.datetime.strptime(start, '%Y%m%d').date()
-    end_date = dt.datetime.strptime(end, '%Y%m%d').date()
+    start_date = int(start)
+    end_date = int(end)
 
     def in_UK(address):
         return True
@@ -39,9 +40,8 @@ def run(input_fname, output_fname, region, start, end):
                     prices = []
                     for i in xrange(len(price_info)/2):
                         date_str, price_str = price_info[2*i: 2*(i+1)]
-                        dates.append(dt.datetime.strptime(date_str, '%Y-%m-%d').date())
+                        dates.append(int(date_str))
                         prices.append(int(price_str))
-                    assert dates == sorted(dates)
                     if dates[0] <= start_date and dates[-1] >= end_date:
                         # We'll create a price for each day such that these prices
                         # interpolate between the sold prices.
@@ -78,5 +78,5 @@ def run(input_fname, output_fname, region, start, end):
                                 interp_prices[i] = interp_prices[i - 1]*factor
                                 i += 1
                         assert start_date_index and end_date_index
-                        f_out.write('%i,%i\n'%(interp_prices[start_date_index],
+                        f_out.write('%f,%f\n'%(interp_prices[start_date_index],
                                                interp_prices[end_date_index]))
