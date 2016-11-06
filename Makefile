@@ -15,7 +15,7 @@ data/index_data/%.csv:   data/index_data/multisales.csv.gz
 
 data/index_data/multisales.csv.gz: data/reduced/all.csv.gz
 	mkdir -p data/index_data
-	zcat $< | scripts/get-multisales.py | gzip > $@.tmp
+	(set -o pipefail; zcat $< | scripts/get-multisales.py | gzip > $@.tmp)
 	mv $@.tmp $@
 
 data/reduced/all.csv.gz:  $(ALL_REDUCED_FILES)
