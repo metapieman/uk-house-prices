@@ -61,3 +61,5 @@ for values in csv.reader(sys.stdin, delimiter=','):
                 while i != index2:
                     interpolated_prices[i][1] = interpolated_prices[i - 1][1]*factor
                     i += 1
+            assert start_date_index and end_date_index
+            print '%i,%i'%(interpolated_prices[start_date_index][1], interpolated_prices[end_date_index][1])
