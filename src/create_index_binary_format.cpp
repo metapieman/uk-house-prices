@@ -1,6 +1,5 @@
 #include <cstdint>
 #include <cstdlib>
-#include <exception>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -25,19 +24,20 @@ int read_record(FILE* handle, char* postcode,
                 int32_t* dates, float* prices,
                 int max_num_sales) {
   static int32_t n_sales;
-  int bytes_read = fread((void*) &n_sales, 4, 1, handle);
+  int n_read = fread((void*) &n_sales, 4, 1, handle);
   if (feof(handle)) {
-    if (bytes_read != 0) {
+    if (n_read != 0) {
       std::cerr
-        << "read_record(): unexpected end of file with " << bytes_read
+        << "read_record(): unexpected end of file with " << n_read
         << " bytes read" << std::endl;
       return -6;
     }
     return 0;
   }
-  if (bytes_read != 4) {
+  if (n_read != 1) {
     std::cerr
-      << "read_record(): failed to read initial 4 bytes of record" << std::endl;
+      << "read_record(): failed to read initial 4 bytes of "
+      "record, instead got " << n_read << std::endl;
     return -1;
   }
   if (n_sales > max_num_sales) {
@@ -46,20 +46,17 @@ int read_record(FILE* handle, char* postcode,
       << max_num_sales << std::endl;
     return -2;
   }
-  int bytes_read = fread((void*) postcode, 8, 1, handle);
-  if (bytes_read != 8) {
+  if (fread((void*) postcode, 8, 1, handle) != 1) {
     std::cerr
       << "read_record(): failed to read 8 byte postcode string" << std::endl;
     return -3;
   }
-  int bytes_read  = fread((void*) dates, 4, n_sales, handle);
-  if (bytes_read != 4*n_sales) {
+  if (fread((void*) dates, 4, n_sales, handle) != n_sales) {
     std::cerr
       << "read_record(): failed to read " << n_sales << " dates" << std::endl;
     return -4;
   }
-  int bytes_read  = fread((void*) prices, 4, n_sales, handle);
-  if (bytes_read != 4*n_sales) {
+  if (fread((void*) prices, 4, n_sales, handle) != n_sales) {
     std::cerr
       << "read_record(): failed to read " << n_sales << " prices" << std::endl;
     return -5;
@@ -67,7 +64,7 @@ int read_record(FILE* handle, char* postcode,
   return n_sales;
 }
 
-int main(int argc, char*[] argv) {
+int main(int argc, char* argv[]) {
   std::string dates_file(argv[1]);
   std::string binary_data_file(argv[2]);
   std::vector<int> dates = get_all_dates(dates_file);
@@ -76,8 +73,27 @@ int main(int argc, char*[] argv) {
   FILE* handle = fopen (binary_data_file.c_str(), "rb");
   if (handle != NULL)
   {
-    // do stuff
+    char postcode[12];
+    postcode[8] = '\0';
+    int32_t dates[24];
+    float prices[24];
+    while (true) {
+      int n_sales = read_record(handle, postcode, dates, prices, 24);
+      if (n_sales < 0) {
+        return 1;
+      }
+      if (n_sales == 0) {
+        break;
+      }
+      std::cout << "n_sales: " << n_sales
+                << "; postcode: " << postcode;
+      for (int i = 0; i < n_sales; ++i) {
+        std::cout << ";  " << dates[i] << ": " << prices[i];
+      }
+      std::cout << std::endl;
+    }
   } else {
-    throw std::runtime_error("failed to open the binary file");
+    std::cerr << "failed to open the binary file";
+    return 2;
   }
 }
