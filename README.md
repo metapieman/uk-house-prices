@@ -7,6 +7,7 @@ Makefile-based project to study UK house prices using Land Registry data.
 - Bash shell
 - R with dplyr, ggplot2 libraries installed
 - Python with numpy, pandas libraries installed
+- Reasonably new g++ (must support '--std c++0x' option)
 
 ## Usage
 
