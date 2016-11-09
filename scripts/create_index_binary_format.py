@@ -37,7 +37,7 @@ def run(input_fname, output_fname, region, start, end):
                 if len(n_dates_struct) < 4:
                     break
                 n_dates = struct.unpack('i', n_dates_struct)[0]
-                data = struct.unpack('=10s' + n_dates*'i' + n_dates*'f', f.read(10 + 8*n_dates))
+                data = struct.unpack('=8s' + n_dates*'i' + n_dates*'f', f.read(8 + 8*n_dates))
                 postcode = data[0]
                 dates = data[1:n_dates + 1]
                 prices = data[n_dates + 1:]

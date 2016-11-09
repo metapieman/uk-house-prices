@@ -35,10 +35,10 @@ with open(output_fname,'wb') as f_out:
                 # on a single date do not count)
                 n_dates = len(dates)
                 if n_dates > 1:
-                    assert len(postcode) <= 10
-                    postcode = postcode.ljust(10, ' ')
+                    assert len(postcode) <= 8
+                    postcode = postcode.ljust(8, ' ')
                     args = [n_dates, postcode] + dates + prices
-                    binary = struct.pack('=i10s' + 'i'*n_dates + 'f'*n_dates, *args)
+                    binary = struct.pack('=i8s' + 'i'*n_dates + 'f'*n_dates, *args)
                     f_out.write(binary)
                     #writer.writerow(entries_to_write)
             full_lines = [tokens]
