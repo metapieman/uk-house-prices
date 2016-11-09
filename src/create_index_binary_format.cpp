@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
@@ -67,10 +68,16 @@ int read_record(FILE* handle, char* postcode,
 int main(int argc, char* argv[]) {
   std::string dates_file(argv[1]);
   std::string binary_data_file(argv[2]);
-  std::vector<int> dates = get_all_dates(dates_file);
+  std::vector<int> all_dates = get_all_dates(dates_file);
+  if (all_dates.empty()) {
+    // error
+    return 3;
+  }
+  std::vector<float> interp_prices(all_dates.size(), 0.0);
   int start_date = atoi(argv[3]);
   int end_date = atoi(argv[4]);
   FILE* handle = fopen (binary_data_file.c_str(), "rb");
+  std::vector<int> date_indices;
   if (handle != NULL)
   {
     char postcode[12];
@@ -80,20 +87,52 @@ int main(int argc, char* argv[]) {
     while (true) {
       int n_sales = read_record(handle, postcode, dates, prices, 24);
       if (n_sales < 0) {
+        // error
         return 1;
       }
       if (n_sales == 0) {
         break;
       }
-      std::cout << "n_sales: " << n_sales
-                << "; postcode: " << postcode;
-      for (int i = 0; i < n_sales; ++i) {
-        std::cout << ";  " << dates[i] << ": " << prices[i];
+      if (dates[0] <= start_date && dates[n_sales - 1] >= end_date) {
+        std::vector<int>::iterator it;
+        it = std::find(all_dates.begin(), all_dates.end(), dates[0]);
+        if (it == all_dates.end()) {
+          // not found, error
+          return 4;
+        }
+        int ind = std::distance(all_dates.begin(), it);
+        date_indices.clear();
+        date_indices.push_back(ind);
+        int n_sale_dates_found = 1;
+        interp_prices[ind] = prices[0];
+        int last_sale_date = dates[n_sales - 1];
+        int start_date_index = -1;
+        int end_date_index = -1;
+        while (all_dates[ind] != last_sale_date && ind < all_dates.size() - 1) {
+          if (all_dates[ind] == start_date) {
+            start_date_index = ind;
+          }
+          ++ind;
+          int new_date = all_dates[ind];
+          double price = -1;
+          int* date_it = std::find(dates, dates + n_sales, new_date);
+          if (date_it != dates + n_sales) {
+            int date_index = std::distance(dates, date_it);
+            price = prices[date_index];
+            interp_prices[ind] = price;
+            date_indices.push_back(ind);
+            ++n_sale_dates_found;
+          }
+          if (all_dates[ind] == end_date) {
+            end_date_index = ind;
+          }
+        }
+        
       }
-      std::cout << std::endl;
     }
   } else {
     std::cerr << "failed to open the binary file";
+    // error
     return 2;
   }
 }

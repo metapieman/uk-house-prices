@@ -13,6 +13,10 @@ data/index_data/%.csv:   data/index_data/multisales.csv.gz
 	zcat $< | scripts/create-index.py $* > $@.tmp
 	mv $@.tmp $@
 
+bin/create_index_binary_format:  src/create_index_binary_format.cpp
+	mkdir -p $$(dirname $@)
+	g++ --std c++0x $< -o $@
+
 data/index_data/multisales.binary: data/reduced/all.csv.gz
 	mkdir -p data/index_data
 	(set -o pipefail; zcat $< | scripts/get-multisales-binary-format.py $@.tmp)
