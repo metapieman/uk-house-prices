@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <math.h>
 #include <string>
 #include <vector>
 
@@ -127,7 +128,24 @@ int main(int argc, char* argv[]) {
             end_date_index = ind;
           }
         }
-        
+        for (int k = 0; k < n_sale_dates_found - 1; ++k) {
+          double price1 = prices[k];
+          double price2 = prices[k+1];
+          int index1 = date_indices[k];
+          int index2 = date_indices[k+1];
+          float factor = pow(price2/price1, 1.0/(index2 - index1));
+          int i = index1 + 1;
+          while (i != index2) {
+            interp_prices[i] = interp_prices[i - 1]*factor;
+            ++i;
+          }
+        }
+        if (start_date_index < 0 || end_date_index < 0) {
+          // error
+          return 5;
+        }
+        std::cout << interp_prices[start_date_index] << ","
+                  << interp_prices[end_date_index] << std::endl;
       }
     }
   } else {
