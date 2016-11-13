@@ -14,6 +14,15 @@ data/index_data/%.from_python.csv:   data/index_data/multisales.csv.gz
 	zcat $< | scripts/create-index.py $* > $@.tmp
 	mv $@.tmp $@
 
+ALL_MEAN_INDEX_FILES:  data/index_data/dates.txt
+	$(MAKE) $$(scripts/all-index-files.sh mean)
+
+# E.g., make data/index_values/NorthWestLondon/mean/20160101_20160201.json
+data/index_values/%.json:  $$(shell scripts/get-index-dependencies.py $$*)
+	mkdir -p $$(dirname $@)
+	scripts/calculate-index.py $^ $$(basename $$(dirname $@)) > $@.tmp
+	mv $@.tmp $@
+
 MONTHLY_INDEX_FILE_TARGET:  data/index_data/dates.txt
 	$(MAKE) $$(scripts/monthly-index-files.sh)
 
