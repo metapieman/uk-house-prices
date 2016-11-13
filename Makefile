@@ -7,11 +7,15 @@ ALL_YEARS=$(shell ./scripts/all-years)
 ALL_REDUCED_FILES=$(foreach year,$(ALL_YEARS),data/reduced/$(year).csv)
 REDUCED_FILES: $(ALL_REDUCED_FILES)
 
+# TODO: Change to version with postcode
 # E.g.: make data/index_data/UK_20160101_20160201.from_python.csv
 data/index_data/%.from_python.csv:   data/index_data/multisales.csv.gz
 	mkdir -p data/index
 	zcat $< | scripts/create-index.py $* > $@.tmp
 	mv $@.tmp $@
+
+MONTHLY_INDEX_FILE_TARGET:  data/index_data/dates.txt
+	$(MAKE) $$(scripts/monthly-index-files.sh)
 
 # E.g.: make data/index_data/20160101_20160201.csv
 data/index_data/%.csv:  data/index_data/multisales.binary \
