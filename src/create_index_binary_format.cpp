@@ -144,7 +144,8 @@ int main(int argc, char* argv[]) {
           // error
           return 5;
         }
-        std::cout << interp_prices[start_date_index] << ","
+        std::cout << postcode << ","
+                  << interp_prices[start_date_index] << ","
                   << interp_prices[end_date_index] << std::endl;
       }
     }

@@ -13,14 +13,14 @@ data/index_data/%.from_python.csv:   data/index_data/multisales.csv.gz
 	zcat $< | scripts/create-index.py $* > $@.tmp
 	mv $@.tmp $@
 
-# E.g.: make data/index_data/UK_20160101_20160201.csv
+# E.g.: make data/index_data/20160101_20160201.csv
 data/index_data/%.csv:  data/index_data/multisales.binary \
                         bin/create_index_binary_format \
                         data/index_data/dates.txt
 	mkdir -p $$(dirname $@)
 	bin/create_index_binary_format data/index_data/dates.txt \
             data/index_data/multisales.binary \
-            $(shell echo $* | tr -s '_' ' ' | cut -d ' ' -f 2,3) > $@.tmp
+            $(shell echo $* | tr -s '_' ' ') > $@.tmp
 	mv $@.tmp $@
 
 data/index_data/dates.txt:  data/latest/$$(shell ls data/latest  | sort -r | head -n 1)
