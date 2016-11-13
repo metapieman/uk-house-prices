@@ -24,12 +24,19 @@ for values in csv.reader(sys.stdin, delimiter=','):
     price_info = values[4:]
     assert len(price_info) %2 == 0, '%s'% str(values)
     if address_predicate(address):
-        dates = []
-        prices = []
-        for i in xrange(len(price_info)/2):
+        date_str, price_str = price_info[0:2]
+        dates = []; prices = []
+        dates.append(dt.datetime.strptime(date_str, '%Y%m%d').date())
+        prices.append(float(price_str))
+        for i in xrange(1, len(price_info)/2):
             date_str, price_str = price_info[2*i: 2*(i+1)]
-            dates.append(dt.datetime.strptime(date_str, '%Y-%m-%d').date())
-            prices.append(int(price_str))
+            date = dt.datetime.strptime(date_str, '%Y%m%d').date()
+            price = float(price_str)
+            if date == dates[-1]:
+                prices[-1] = price
+            else:
+                dates.append(dt.datetime.strptime(date_str, '%Y%m%d').date())
+                prices.append(int(price_str))
         assert dates == sorted(dates)
         if dates[0] <= start_date and dates[-1] >= end_date:
             # We'll create a price for each day such that these prices
@@ -62,4 +69,6 @@ for values in csv.reader(sys.stdin, delimiter=','):
                     interpolated_prices[i][1] = interpolated_prices[i - 1][1]*factor
                     i += 1
             assert start_date_index and end_date_index
-            print '%i,%i'%(interpolated_prices[start_date_index][1], interpolated_prices[end_date_index][1])
+            print '%i,%i'%(interpolated_prices[start_date_index][1],
+                           interpolated_prices[end_date_index][1])
+
