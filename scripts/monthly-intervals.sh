@@ -1,8 +1,10 @@
 #! /bin/bash
 
-MONTH_FIRST_DAYS=$(for date in $(cat data/index_data/dates.txt); do echo ${date:0:6}01; done | sort -u)
+DATE=20050101
+LAST_MONTH_START=$(date +%Y%m%d -d "$(date +%Y%m)01 -1 month")
 
-for MONTH_FIRST_DAY in $MONTH_FIRST_DAYS; do
-    END=$(date +%Y%m%d -d "$MONTH_FIRST_DAY +1 month")
-    echo ${MONTH_FIRST_DAY}_${END}
+while [ $DATE -ne $LAST_MONTH_START ]; do
+    NEXT_DATE=$(date +%Y%m%d -d "$DATE +1 month")
+    echo ${DATE}_${NEXT_DATE}
+    DATE=$NEXT_DATE
 done
