@@ -50,19 +50,29 @@ london_period <-
   filter(Age == "Period") %>%
   filter(Month != max(data$Month))
 
+
+y_label_map = c()
+y_label_map["len"] = "Number_of_transactions_by_month"
+y_label_map["mean"] = "Mean_price_by_month"
+y_label_map["median"] = "Median_price_by_month"
+
+y_label <- y_label_map[stat]
+
+colnames(london_period)[which(colnames(london_period) == 'Price')] <- y_label
+
 london_period_flats <- london_period%>% filter(Type=="Flat")
 london_period_houses <- london_period%>% filter(Type=="House")
 
 width <- 17
 height <- 15
 
-ggplot(london_period_flats, aes(x=Month, y=Price)) +
+ggplot(london_period_flats, aes_string(x="Month", y=y_label)) +
   geom_line(aes(color=Type)) +
   facet_wrap(~LocalAuthority, scales="free")
 
 ggsave(sprintf('plots/london_period_flats_%s.tmp.pdf', stat), width=width, height=height)
 
-ggplot(london_period_houses, aes(x=Month, y=Price)) +
+ggplot(london_period_houses, aes_string(x="Month", y=y_label)) +
   geom_line(aes(color=Type)) +
   facet_wrap(~LocalAuthority, scales="free")
 
