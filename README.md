@@ -21,4 +21,4 @@ To generate pdf plots of the monthly median price of London flats/houses, do thi
 
 <code>make plots/london_period_flats_median.pdf plots/london_period_houses_median.pdf</code>
 
-You can replace 'median' with 'mean' or 'len' to plot monthly means/monthly counts respectively. Counts are just number of properties sold each month.
+You can replace 'median' with 'mean' or 'len' to plot monthly means or sales counts respectively.
