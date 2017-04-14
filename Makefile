@@ -101,6 +101,15 @@ data/summaries_by_year/%.csv:  data/latest/pp-%.csv
 	./scripts/write_summary.py $< ./header.csv  > $@.tmp
 	mv $@.tmp $@
 
+# data/enhanced-with-energy-data/%.csv:  data/latest/pp-%.csv energy-certificates/reduced.csv
+# 	mkdir -p $$(dirname $@)
+
+# Combined energy certificate data for all boroughs, with only the
+# information we need.
+energy-certificates/reduced.csv.gz:  $$(shell find energy-certificates/ -name certificates.csv)
+	scripts/reduce-energy-data energy-certificates/reduced.csv $^
+	gzip energy-certificates/reduced.csv
+
 # E.g.: make TRY_UPDATE_2016
 .PHONY: TRY_UPDATE_%
 TRY_UPDATE_%:

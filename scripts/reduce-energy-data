@@ -1,0 +1,25 @@
+#! /usr/bin/env python
+
+import pandas as pd
+import sys
+
+output_file = sys.argv[1]
+certificate_files = sys.argv[2:]
+
+columns_to_keep = [
+    'ADDRESS1',
+    'ADDRESS2',
+    'ADDRESS3',
+    'POSTCODE',
+    'TOTAL_FLOOR_AREA',
+    'PROPERTY_TYPE',
+]
+
+all_dataframes = []
+for certificate_file in certificate_files:
+    print '%s: getting reduced data for %s'% (sys.argv[0], certificate_file)
+    df = pd.read_csv(certificate_file, usecols=columns_to_keep)
+    all_dataframes.append(df)
+
+with open(output_file, 'w') as f:
+    pd.concat(all_dataframes).to_csv(f, index=False)
