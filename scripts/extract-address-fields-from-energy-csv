@@ -8,4 +8,4 @@ energy_certificate_file = sys.argv[1]
 with open(energy_certificate_file) as f:
     csv_reader = csv.reader(f, delimiter=',', quotechar='"')
     for row in csv_reader:
-        print ' '.join(row[1:4])
+        print ' '.join(row[1:4]).lstrip().rstrip()
