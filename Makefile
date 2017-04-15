@@ -119,7 +119,7 @@ energy-certificates/%/reduced.csv.gz:  energy-certificates/%/certificates.csv en
 
 energy-certificates/%/addresses.csv.gz:  energy-certificates/%/certificates.csv
 	set -o pipefail && \
-            cut -d, $< -f2,3,4 | tr -d '"' | tr ',' ' ' | sed 's/\ \+/\ /g' | \
+            scripts/extract-address-fields-from-energy-csv $< | tr ',' ' ' | sed 's/\ \+/\ /g' | \
                tr '[:lower:]' '[:upper:]' > energy-certificates/$*/addresses.csv
 	gzip energy-certificates/$*/addresses.csv
 
