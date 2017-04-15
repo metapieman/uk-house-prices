@@ -1,0 +1,27 @@
+#! /usr/bin/env python
+
+import csv
+import sys
+
+header_file, lr_csv = sys.argv[1:]
+
+with open(header_file) as f:
+    header = f.readline().rstrip()
+    columns = header.split(',')
+
+columns_to_index = {}
+for i, column in enumerate(columns):
+    columns_to_index[column] = i
+
+columns_of_interest = [
+    'SAON', # Secondary Addressable Object Name
+    'PAON', # Primary Addressable Object Name
+    'Street'
+]
+
+ordered_indices_to_print = [columns_to_index[c] for c in columns_of_interest]
+
+with open(lr_csv) as f:
+    csv_reader = csv.reader(f, delimiter=',', quotechar='"')
+    for row in csv_reader:
+        print ' '.join([row[i] for i in ordered_indices_to_print]).lstrip().rstrip()

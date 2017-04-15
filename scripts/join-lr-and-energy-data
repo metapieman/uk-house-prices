@@ -1,0 +1,41 @@
+#! /usr/bin/env python
+
+import pandas as pd
+import sys
+
+header_file, output_csv, lr_csv, addresses_csv, energy_csv = sys.argv[1:]
+
+with open(header_file) as f:
+    header = f.readline().rstrip()
+    columns = header.split(',')
+
+columns_to_index = {}
+for i, column in enumerate(columns):
+    columns_to_index[column] = i
+
+columns_of_interest = [
+    'Price',
+    'Postcode',
+    'PropertyType',
+    'PropertyAge',
+    'Tenure'
+]
+
+lr = pd.read_csv(lr_csv, header=None, index_col=False,
+                 usecols=[columns_to_index[c]
+                          for c in columns_of_interest])
+lr.columns = columns_of_interest
+
+addresses = pd.read_csv(addresses_csv, header=None, index_col=False)
+lr['FULL_ADDRESS'] = addresses
+
+lr.columns = [c.upper() for c in lr.columns]
+
+energy_data = pd.read_csv(energy_csv)
+merged = pd.merge(lr, energy_data, on=['FULL_ADDRESS', 'POSTCODE'])
+
+print '%s: managed to find floor area for %i out of %i Land Registry entries'% (
+    sys.argv[0], len(merged), len(lr))
+
+with open(output_csv, 'w') as f:
+    merged.to_csv(f, index=False)

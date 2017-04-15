@@ -101,8 +101,19 @@ data/summaries_by_year/%.csv:  data/latest/pp-%.csv
 	./scripts/write_summary.py $< ./header.csv  > $@.tmp
 	mv $@.tmp $@
 
-# data/enhanced-with-energy-data/%.csv:  data/latest/pp-%.csv energy-certificates/reduced.csv
-# 	mkdir -p $$(dirname $@)
+# E.g., make data/enhanced-with-energy-data/2017.csv.gz
+data/enhanced-with-energy-data/%.csv.gz:  data/latest/pp-%.csv data/full-addresses/%.csv.gz energy-certificates/reduced.csv.gz
+	mkdir -p $$(dirname $@)
+	scripts/join-lr-and-energy-data ./header.csv data/enhanced-with-energy-data/$*.csv $^
+	gzip data/enhanced-with-energy-data/$*.csv
+
+# E.g., make data/full-addresses/2017.csv.gz
+data/full-addresses/%.csv.gz:  data/latest/pp-%.csv
+	mkdir -p $$(dirname $@)
+	set -o pipefail && \
+            scripts/normalize-lr-addresses ./header.csv data/latest/pp-$*.csv | \
+            tr ',' ' ' | sed 's/\ \+/\ /g' > data/full-addresses/$*.csv
+	gzip data/full-addresses/$*.csv
 
 # Combined energy certificate data for all boroughs, with only the
 # information we need.
