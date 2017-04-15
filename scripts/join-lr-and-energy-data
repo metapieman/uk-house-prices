@@ -14,11 +14,13 @@ for i, column in enumerate(columns):
     columns_to_index[column] = i
 
 columns_of_interest = [
+    'Date',
     'Price',
     'Postcode',
     'PropertyType',
     'PropertyAge',
-    'Tenure'
+    'Tenure',
+    'LocalAuthority',
 ]
 
 lr = pd.read_csv(lr_csv, header=None, index_col=False,
