@@ -110,9 +110,18 @@ energy-certificates/reduced.csv.gz:  $$(shell scripts/all-reduced-energy-files)
 	scripts/concat-reduced-energy-files energy-certificates/reduced.csv $^
 	gzip energy-certificates/reduced.csv
 
-energy-certificates/%/reduced.csv.gz:  energy-certificates/%/certificates.csv
-	scripts/reduce-energy-data energy-certificates/$*/reduced.csv $<
+energy-certificates/%/reduced.csv.gz:  energy-certificates/%/certificates.csv energy-certificates/%/addresses.csv.gz
+	scripts/create-reduced-energy-file \
+           energy-certificates/$*/reduced.csv \
+	   energy-certificates/$*/certificates.csv \
+           energy-certificates/$*/addresses.csv.gz
 	gzip energy-certificates/$*/reduced.csv
+
+energy-certificates/%/addresses.csv.gz:  energy-certificates/%/certificates.csv
+	set -o pipefail && \
+            cut -d, $< -f2,3,4 | tr -d '"' | tr ',' ' ' | sed 's/\ \+/\ /g' | \
+               tr '[:lower:]' '[:upper:]' > energy-certificates/$*/addresses.csv
+	gzip energy-certificates/$*/addresses.csv
 
 # E.g.: make TRY_UPDATE_2016
 .PHONY: TRY_UPDATE_%
