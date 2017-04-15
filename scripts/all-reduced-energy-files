@@ -1,0 +1,1 @@
+for dir in $(find energy-certificates/ -maxdepth 1 -mindepth 1 -type d); do echo $dir/reduced.csv.gz; done

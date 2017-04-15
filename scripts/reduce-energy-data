@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 
+import numpy as np
 import pandas as pd
+import re
 import sys
 
 output_file = sys.argv[1]
@@ -16,9 +18,22 @@ columns_to_keep = [
 ]
 
 all_dataframes = []
-for certificate_file in certificate_files:
+for certificate_file in certificate_files[:2]:
     print '%s: getting reduced data for %s'% (sys.argv[0], certificate_file)
     df = pd.read_csv(certificate_file, usecols=columns_to_keep)
+    cleaned_addresses = []
+    for i_row in xrange(len(df)):
+        row = df.iloc[i_row]
+        cleaned_address_components = []
+        for i_address in xrange(1, 4):
+            address_component = row.ix['ADDRESS%i'% i_address]
+            if type(address_component) == str and address_component:
+                cleaned = address_component.replace(',', ' ').lstrip().rstrip()
+                cleaned = re.sub('[ ]+', ' ', cleaned)
+                cleaned_address_components.append(cleaned)
+        cleaned_address = ' '.join(cleaned_address_components).upper()
+        cleaned_addresses.append(cleaned_address)
+    df['FULL_ADDRESS'] = cleaned_addresses
     all_dataframes.append(df)
 
 with open(output_file, 'w') as f:

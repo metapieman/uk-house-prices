@@ -1,0 +1,23 @@
+#! /usr/bin/env python
+
+import pandas as pd
+import sys
+
+output_file = sys.argv[1]
+reduced_files = sys.argv[2:]
+
+assert len(reduced_files) > 0
+
+columns_of_interest = [
+    'FULL_ADDRESS',
+    'POSTCODE',
+    'PROPERTY_TYPE',
+    'TOTAL_FLOOR_AREA',
+]
+
+dataframes = []
+for fname in reduced_files:
+    dataframes.append(pd.read_csv(fname)[columns_of_interest])
+
+with open(output_file, 'w') as f:
+    pd.concat(dataframes).to_csv(f, index=False)
