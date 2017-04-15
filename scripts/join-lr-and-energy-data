@@ -23,10 +23,12 @@ columns_of_interest = [
     'LocalAuthority',
 ]
 
+column_indices = [columns_to_index[c] for c in columns_of_interest]
 lr = pd.read_csv(lr_csv, header=None, index_col=False,
-                 usecols=[columns_to_index[c]
-                          for c in columns_of_interest])
+                 usecols=column_indices)
+lr = lr[column_indices]
 lr.columns = columns_of_interest
+lr['Date'] = lr['Date'].str.split(' ').str[0]
 
 addresses = pd.read_csv(addresses_csv, header=None, index_col=False)
 lr['FULL_ADDRESS'] = addresses

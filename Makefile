@@ -101,6 +101,12 @@ data/summaries_by_year/%.csv:  data/latest/pp-%.csv
 	./scripts/write_summary.py $< ./header.csv  > $@.tmp
 	mv $@.tmp $@
 
+# E.g., make data/summaries-by-square-metre/2017.csv
+data/summaries-by-square-metre/%.csv:  data/enhanced-with-energy-data/%.csv.gz
+	mkdir -p $$(dirname $@)
+	scripts/summarize-by-square-metre $^ >$@.tmp
+	mv $@.tmp $@
+
 # E.g., make data/enhanced-with-energy-data/2017.csv.gz
 data/enhanced-with-energy-data/%.csv.gz:  data/latest/pp-%.csv data/full-addresses/%.csv.gz energy-certificates/reduced.csv.gz
 	mkdir -p $$(dirname $@)

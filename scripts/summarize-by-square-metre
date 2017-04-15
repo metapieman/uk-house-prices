@@ -1,0 +1,27 @@
+#! /usr/bin/env python
+
+import pandas as pd
+import sys
+
+data_file = sys.argv[1]
+
+df = pd.read_csv(data_file, parse_dates=['DATE'])
+
+df['PRICE_PER_SQUARE_METRE'] = df['PRICE']/df['TOTAL_FLOOR_AREA']
+
+df['DATEINT'] = 10000*df.DATE.dt.year + 100*df.DATE.dt.month + 1
+df['DATE'] = pd.to_datetime(df.DATEINT, format='%Y%m%d')
+
+def summarize_by_square_metre(subdf):
+    return pd.Series(
+        {
+            'mean price per square metre': subdf['PRICE'].sum()/subdf['TOTAL_FLOOR_AREA'].sum(),
+            'median price per square metre': subdf['PRICE_PER_SQUARE_METRE'].median()
+        }
+    )
+
+summary = df.groupby(['LOCALAUTHORITY', 'DATE', 'PROPERTYTYPE', 'PROPERTYAGE']).apply(
+    summarize_by_square_metre).reset_index()
+
+summary.to_csv(sys.stdout, index=False)
+
