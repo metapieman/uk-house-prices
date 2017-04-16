@@ -103,14 +103,14 @@ data/summaries_by_year/%.csv:  data/latest/pp-%.csv
 
 ALL_SUMMARIES_PER_SQUARE_METRE=$(foreach year,$(ALL_YEARS),data/summaries-by-square-metre/$(year).csv)
 
-data/plots/london_period_flats_median_per_square_metre.pdf:  $(ALL_SUMMARIES_PER_SQUARE_METRE)
+# % should be STAT_AGE_TYPE
+#
+# E.g.:
+#
+# make data/plots/per_square_metre/london_mean_period_flat.pdf
+data/plots/per_square_metre/london_%.pdf:  $(ALL_SUMMARIES_PER_SQUARE_METRE)
 	mkdir -p $$(dirname $@)
-	scripts/plot-london-per-square-metre $@.tmp.pdf median period flat $^
-	mv $@.tmp.pdf $@
-
-data/plots/london_period_flats_mean_per_square_metre.pdf:  $(ALL_SUMMARIES_PER_SQUARE_METRE)
-	mkdir -p $$(dirname $@)
-	scripts/plot-london-per-square-metre $@.tmp.pdf mean period flat $^
+	scripts/plot-london-per-square-metre $@.tmp.pdf $$(echo $* | tr '_' ' ') $^
 	mv $@.tmp.pdf $@
 
 
