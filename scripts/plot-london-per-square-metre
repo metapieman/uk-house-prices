@@ -97,7 +97,7 @@ latest = data.irow(-1).sort(ascending=False, inplace=False)
 data_source_description = ('DATA USED: LAND REGISTRY PRICE PAID DATA, '
                            'ENERGY PERFORMANCE OF BUILDINGS CERTIFICATES DATA')
 
-title = '%s for %s %s IN LONDON BOROUGHS\n(BOROUGHS SORTED IN DESCENDING ORDER OF VALUE)'% (
+title = '%s for %s %s IN LONDON\n(BOROUGHS SORTED IN DESCENDING ORDER OF VALUE)'% (
     value_column.upper(),
     age,
     type_descriptions[property_type]
