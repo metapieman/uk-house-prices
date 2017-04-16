@@ -1,0 +1,121 @@
+#! /usr/bin/env python
+
+from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import sys
+
+output_path, stat, age, property_type = sys.argv[1:5]
+summaries = sys.argv[5:]
+
+assert stat in ('mean', 'median')
+assert age in ('period', 'newbuild')
+assert property_type in ('flat', 'terraced', 'semi', 'detached', 'other')
+
+type_descriptions = {
+    'flat': 'flats',
+    'terraced': 'terraced houses',
+    'semi': 'semi-detached houses',
+    'detached': 'detached houses',
+}
+
+london_boroughs = [
+    "BARKING AND DAGENHAM",
+    "BARNET",
+    "BEXLEY",
+    "BRENT",
+    "BROMLEY",
+    "CAMDEN",
+    "CITY OF LONDON",
+    "CITY OF WESTMINSTER",
+    "CROYDON",
+    "EALING",
+    "ENFIELD",
+    "EPPING FOREST",
+    "GREENWICH",
+    "HACKNEY",
+    "HAMMERSMITH AND FULHAM",
+    "HARINGEY",
+    "HARROW",
+    "HAVERING",
+    "HILLINGDON",
+    "HOUNSLOW",
+    "ISLINGTON",
+    "KENSINGTON AND CHELSEA",
+    "KINGSTON UPON THAMES",
+    "LAMBETH",
+    "LEWISHAM",
+    "MERTON",
+    "NEWHAM",
+    "REDBRIDGE",
+    "RICHMOND UPON THAMES",
+    "SOUTHWARK",
+    "SUTTON",
+    "TOWER HAMLETS",
+    "WALTHAM FOREST",
+    "WANDSWORTH",
+]
+
+data = pd.concat([pd.read_csv(summary, parse_dates=['DATE']) for summary in summaries])
+
+data = data[data.LOCALAUTHORITY.isin(london_boroughs)]
+
+data = data[data.DATE != data.DATE.max()]
+
+age_to_code = {
+    'period': 'N',
+    'newbuild': 'Y',
+}
+
+property_type_to_code = {
+    'flat': 'F',
+    'terraced': 'T',
+    'semi': 'S',
+    'detached': 'D',
+    'other': 'O',
+}
+
+query = 'PROPERTYAGE=="%s" and PROPERTYTYPE=="%s"'% (
+    age_to_code[age],
+    property_type_to_code[property_type]
+)
+
+data = data.query(query)
+
+del data['PROPERTYAGE']
+del data['PROPERTYTYPE']
+
+data = data.rename(columns={'LOCALAUTHORITY': 'LOCAL AUTHORITY'})
+
+value_column = '%s price per square metre'% stat
+data = pd.pivot_table(data, values=value_column,
+                      index='DATE', columns='LOCAL AUTHORITY').sort()
+
+latest = data.irow(-1).sort(ascending=False, inplace=False)
+
+data_source_description = ('DATA USED: LAND REGISTRY PRICE PAID DATA, '
+                           'ENERGY PERFORMANCE OF BUILDINGS CERTIFICATES DATA')
+
+title = '%s for %s %s IN LONDON BOROUGHS\n(BOROUGHS SORTED IN DESCENDING ORDER OF VALUE)'% (
+    value_column.upper(),
+    age,
+    type_descriptions[property_type]
+)
+title = title.upper()
+
+with PdfPages(output_path) as pdf:
+    fig = plt.figure(figsize=(20.0, 20.0))
+    ax = fig.add_subplot(111)
+    subplots = data[latest.index].plot(subplots=True, layout=(6,6), ax=ax,
+                                       linewidth=0.5, color='b')
+    for subplot_list in subplots[:-1]:
+        for subplot in subplot_list:
+            subplot.set_xlabel('')
+    for subplot in subplots[-1]:
+        subplot.set_xlabel('MONTH')
+
+    fig.suptitle(title)
+    fig.text(0.01, 0.01, data_source_description)
+    pdf.savefig()
+    plt.close()
