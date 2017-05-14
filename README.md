@@ -1,4 +1,7 @@
 # uk-house-prices
+
+## Short description
+
 Makefile-based project to study UK house prices using Land Registry data. Currently produces plots for London only, but may still be useful simply as a tool for maintaining an up-to-date Land Registry dataset.
 
 ## Requirements
@@ -29,9 +32,11 @@ You can replace 'median' with 'mean' or 'len' to plot monthly means or sales cou
 
 ### Creating London per-square-metre plots
 
-The UK Department For Communities and Local Government publishes a dataset containing Energy Performance Certificate data. Since EPCs contain area data, it is possible to link this with Land Registry data to obtain per-square-metre prices for many properties. Note that not all properties appear in the EPC dataset, so when creating per-square-metre statistics it is necessary to throw away some of the Land Registry data.
+The UK Department For Communities and Local Government publishes a dataset containing Energy Performance Certificates (see ```https://epc.opendatacommunities.org/```). Since EPCs contain area information, it is possible to link this dataset with Land Registry data to obtain per-square-metre prices for many properties.
 
-To plot per-square-metre statistics, you must download the complete EPC dataset and unzip it into a subdirectory <code>energy-certificates</code> in the top level directory of this repo. Then, from the top level directory of this repo, if you do <code>ls energy-certificates |  head</code>, you should see something like:
+**Note** Not all properties appear in the EPC dataset. This means, of course, that when creating per-square-metre plots (see below), some sales in the Land Registry data go unused.
+
+To plot per-square-metre statistics, you must download the complete EPC dataset and unzip it into a subdirectory <code>energy-certificates</code> in the top level directory of this repo. Then, from the top level directory, if you do <code>ls energy-certificates |  head</code>, you should see something like:
 
 ```
 domestic-E06000001-Hartlepool  
