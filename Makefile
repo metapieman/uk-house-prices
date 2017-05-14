@@ -124,7 +124,7 @@ data/summaries-by-square-metre/%.csv:  data/enhanced-with-energy-data/%.csv.gz
 data/enhanced-with-energy-data/%.csv.gz:  data/latest/pp-%.csv data/full-addresses/%.csv.gz energy-certificates/reduced.csv.gz
 	mkdir -p $$(dirname $@)
 	scripts/join-lr-and-energy-data ./header.csv data/enhanced-with-energy-data/$*.csv $^
-	gzip data/enhanced-with-energy-data/$*.csv
+	gzip -f data/enhanced-with-energy-data/$*.csv
 
 # E.g., make data/full-addresses/2017.csv.gz
 data/full-addresses/%.csv.gz:  data/latest/pp-%.csv
@@ -132,26 +132,26 @@ data/full-addresses/%.csv.gz:  data/latest/pp-%.csv
 	set -o pipefail && \
             scripts/normalize-lr-addresses ./header.csv data/latest/pp-$*.csv | \
             tr ',' ' ' | sed 's/\ \+/\ /g' > data/full-addresses/$*.csv
-	gzip data/full-addresses/$*.csv
+	gzip -f data/full-addresses/$*.csv
 
 # Combined energy certificate data for all boroughs, with only the
 # information we need.
 energy-certificates/reduced.csv.gz:  $$(shell scripts/all-reduced-energy-files)
 	scripts/concat-reduced-energy-files energy-certificates/reduced.csv $^
-	gzip energy-certificates/reduced.csv
+	gzip -f energy-certificates/reduced.csv
 
 energy-certificates/%/reduced.csv.gz:  energy-certificates/%/certificates.csv energy-certificates/%/addresses.csv.gz
 	scripts/create-reduced-energy-file \
            energy-certificates/$*/reduced.csv \
 	   energy-certificates/$*/certificates.csv \
            energy-certificates/$*/addresses.csv.gz
-	gzip energy-certificates/$*/reduced.csv
+	gzip -f energy-certificates/$*/reduced.csv
 
 energy-certificates/%/addresses.csv.gz:  energy-certificates/%/certificates.csv
 	set -o pipefail && \
             scripts/extract-address-fields-from-energy-csv $< | tr ',' ' ' | sed 's/\ \+/\ /g' | \
                tr '[:lower:]' '[:upper:]' > energy-certificates/$*/addresses.csv
-	gzip energy-certificates/$*/addresses.csv
+	gzip -f energy-certificates/$*/addresses.csv
 
 # E.g.: make TRY_UPDATE_2016
 .PHONY: TRY_UPDATE_%
