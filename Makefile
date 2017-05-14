@@ -107,7 +107,7 @@ ALL_SUMMARIES_PER_SQUARE_METRE=$(foreach year,$(ALL_YEARS),data/summaries-by-squ
 #
 # E.g.:
 #
-# make data/plots/per_square_metre/london_mean_period_flat.pdf
+# make plots/per_square_metre/london_mean_period_flat.pdf
 plots/per_square_metre/london_%.pdf:  $(ALL_SUMMARIES_PER_SQUARE_METRE)
 	mkdir -p $$(dirname $@)
 	scripts/plot-london-per-square-metre $@.tmp.pdf $$(echo $* | tr '_' ' ') $^
