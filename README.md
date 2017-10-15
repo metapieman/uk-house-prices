@@ -2,7 +2,7 @@
 
 ## Short description
 
-Makefile-based project to study UK house prices using Land Registry data. Currently produces plots for London only, but may still be useful simply as a tool for maintaining an up-to-date Land Registry dataset.
+Makefile-based project to study UK house prices using Land Registry data. Currently produces plots for London only, but may also be useful for other regions as a tool for maintaining an up-to-date Land Registry dataset.
 
 ## Requirements
 
