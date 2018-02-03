@@ -24,4 +24,9 @@ ordered_indices_to_print = [columns_to_index[c] for c in columns_of_interest]
 with open(lr_csv) as f:
     csv_reader = csv.reader(f, delimiter=',', quotechar='"')
     for row in csv_reader:
-        print ' '.join([row[i] for i in ordered_indices_to_print]).lstrip().rstrip()
+        try:
+            print ' '.join([row[i] for i in ordered_indices_to_print]).lstrip().rstrip()
+        except Exception as e:
+            sys.stderr.write('%s: failed on this row: %s'% (sys.argv[0], row))
+            raise e
+
