@@ -1,3 +1,12 @@
 #! /bin/bash
 
-seq 2005 $(date -d "today - 1 month" +%Y)
+N_MONTHS_BACK=1
+
+# In February, the data set for the current year doesn't seem to be
+# ready yet. This hack ensures that the current year isn't included
+# until March.
+if  [ $(date +%b) = Feb ]; then
+    N_MONTHS_BACK=2
+fi
+
+seq 2005 $(date -d "today - ${N_MONTHS_BACK} months" +%Y)
