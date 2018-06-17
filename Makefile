@@ -7,6 +7,12 @@ ALL_YEARS=$(shell ./scripts/all-years)
 ALL_REDUCED_FILES=$(foreach year,$(ALL_YEARS),data/reduced/$(year).csv)
 REDUCED_FILES: $(ALL_REDUCED_FILES)
 
+ALL_AREA_DATA_FILES=$(foreach year,$(ALL_YEARS),data/enhanced-with-energy-data/$(year).csv.gz)
+
+# Open an exploratory iPython session with area data preloaded
+AREA_DATA_IPY: $(ALL_AREA_DATA_FILES)
+	./explore-area-data $^
+
 # TODO: Change to version with postcode
 # E.g.: make data/index_data/UK_20160101_20160201.from_python.csv
 data/index_data/%.from_python.csv:   data/index_data/multisales.csv.gz
