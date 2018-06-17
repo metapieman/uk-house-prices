@@ -18,20 +18,12 @@ df['PRICE_PER_SQUARE_METRE'] = df.PRICE/df.TOTAL_FLOOR_AREA
 # Remove erroneous points
 df = df.query('TOTAL_FLOOR_AREA!=0')
 
-def per_square_metre_by_postcode(postcode):
-    if ' ' in postcode:
-        regex = '^%s'% postcode
-    else:
-        regex = '^%s '% postcode
-    return df[df.POSTCODE.str.contains(regex)].groupby(
+def per_square_metre_by_postcode(postcode_regex):
+    return df[df.POSTCODE.str.contains(postcode_regex)].groupby(
         'MONTH').PRICE_PER_SQUARE_METRE.median()
 
-def per_square_metre_by_postcode_and_type(postcode, stat='median'):
-    if ' ' in postcode:
-        regex = '^%s'% postcode
-    else:
-        regex = '^%s '% postcode
-    grouped = df[df.POSTCODE.str.contains(regex)].groupby([
+def per_square_metre_by_postcode_and_type(postcode_regex, stat='median'):
+    grouped = df[df.POSTCODE.str.contains(postcode_regex)].groupby([
         'MONTH', 'PROPERTY_TYPE']).PRICE_PER_SQUARE_METRE
     output = getattr(grouped, stat)().reset_index()
     return pd.pivot_table(
@@ -39,16 +31,16 @@ def per_square_metre_by_postcode_and_type(postcode, stat='median'):
         index='MONTH', columns=['PROPERTY_TYPE']
     )
 
-def forensic(postcode):
-    psq_min = per_square_metre_by_postcode_and_type(postcode, stat='min')
-    psq_max = per_square_metre_by_postcode_and_type(postcode, stat='max')
-    psq_med = per_square_metre_by_postcode_and_type(postcode, stat='median')
+def forensic(postcode_regex):
+    psq_min = per_square_metre_by_postcode_and_type(postcode_regex, stat='min')
+    psq_max = per_square_metre_by_postcode_and_type(postcode_regex, stat='max')
+    psq_med = per_square_metre_by_postcode_and_type(postcode_regex, stat='median')
     for ptype in ('House', 'Flat'):
         pylab.figure()
         ax = psq_med[ptype].plot(color='b')
         psq_min[ptype].plot(ax=ax, color='b', linestyle=':')
         psq_max[ptype].plot(ax=ax, color='b', linestyle=':')
-        ax.set_title('%ss in %s'% (ptype, postcode))
+        ax.set_title('%ss in %s'% (ptype, postcode_regex))
     pylab.show()
 
 
