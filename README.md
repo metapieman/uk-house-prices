@@ -2,7 +2,7 @@
 
 ## Short description
 
-This is a Makefile-based project to study UK house prices. It uses Land Registry data, and (optionally) Energy Performance Certificate data for area information. Currently, it can plot statistics such as median/mean prices and transaction volumes for London boroughs. It may also be useful for other regions, simply as a tool for maintaining an up-to-date Land Registry dataset.
+This is a Makefile-based project to study UK house prices. It uses Land Registry data for paid prices, and (optionally) Energy Performance Certificate data for area information. Currently, it can plot statistics such as median/mean prices and transaction volumes for London boroughs. It may also be useful for other regions, simply as a tool for maintaining an up-to-date Land Registry dataset.
 
 ## Requirements
 
