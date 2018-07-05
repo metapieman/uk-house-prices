@@ -23,11 +23,16 @@ The Land Registry updates its data around the end of each month. If the data has
 
 ### Creating monthly plots of London statistics
 
-To generate pdf plots of the monthly median price of London flats/houses, do this:
+To generate pdf plots of the monthly median price of London flats and
+houses, do this:
 
 <code>make plots/london_period_flats_median.pdf plots/london_period_houses_median.pdf</code>
 
 You can replace 'median' with 'mean' or 'len' to plot monthly means or sales counts respectively.
+
+Currently, new-build properties are not supported for the above plots,
+although they are supported for the per-square metre plots (see
+below).
 
 ### Creating London per-square-metre plots
 
