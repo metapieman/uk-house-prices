@@ -1,5 +1,10 @@
 #! /bin/bash
 
+# Download land registry file for given year, but use wget's -N option
+# so that download only happens if timestamp or size has changed. Then
+# if the file has changed, after the download save a backup of the new
+# file.
+
 set -x
 
 YEAR=$1
@@ -11,7 +16,13 @@ fi
 
 URL=http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com
 FNAME=$YEAR_$(date +%Y%m%d_%H:%M:%S)
-wget -N $URL/pp-$YEAR.csv
+
+LIMIT_RATE_OPTION=""
+if [ ! -z $WGET_LIMIT_RATE ]; then
+    LIMIT_RATE_OPTION="--limit-rate=$WGET_LIMIT_RATE"
+fi
+
+wget -N $LIMIT_RATE_OPTION $URL/pp-$YEAR.csv
 
 if [ ! $? = 0 ]; then
     echo "try-update: wget command failed, deleting pp-$YEAR.csv in "\
@@ -27,8 +38,14 @@ fi
 
 SHA_AFTER=$(sha256sum pp-$YEAR.csv | cut -d ' ' -f 1)
 
-# If file has changed, backup the new one
+# If file has changed, backup the new one and symlink the 'latest'
+# file to the backup. The backup will never be deleted (unless the
+# user does so manually), so if something fails in an update, the
+# 'latest' symlinks won't be affected.
 if [ ! "$SHA_BEFORE" = "$SHA_AFTER" ]; then
     mkdir -p ../backups
-    cp -a pp-$YEAR.csv ../backups/pp-$YEAR-$(date +%Y%m%d_%H:%M:%S).csv
+    BACKUP_BASENAME=pp-$YEAR-$(date +%Y%m%d_%H:%M:%S).csv
+    cp -a pp-$YEAR.csv ../backups/$BACKUP_BASENAME
+    rm -f ../latest/pp-$YEAR.csv
+    ln -s ../backups/$BACKUP_BASENAME ../latest/pp-$YEAR.csv
 fi

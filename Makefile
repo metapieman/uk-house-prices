@@ -163,7 +163,8 @@ energy-certificates/%/addresses.csv.gz:  energy-certificates/%/certificates.csv
 .PHONY: TRY_UPDATE_%
 TRY_UPDATE_%:
 	mkdir -p data/latest
-	cd data/latest && ../../scripts/try-update $*
+	mkdir -p data/land-registry-mirror
+	cd data/land-registry-mirror && ../../scripts/try-update $*
 
 ALL_UPDATES=$(foreach year,$(ALL_YEARS),TRY_UPDATE_$(year))
 .PHONY: TRY_ALL_UPDATES
