@@ -22,6 +22,15 @@ if [ ! -z $WGET_LIMIT_RATE ]; then
     LIMIT_RATE_OPTION="--limit-rate=$WGET_LIMIT_RATE"
 fi
 
+# trap ctrl-c and call delete_file_and_exit
+trap delete_file_and_exit INT
+
+function delete_file_and_exit() {
+    echo "caught ctrl-c, deleting pp-$YEAR.csv and exiting" >&2
+    rm -f pp-$YEAR.csv
+    exit 1
+}
+
 wget -N $LIMIT_RATE_OPTION $URL/pp-$YEAR.csv
 
 if [ ! $? = 0 ]; then
