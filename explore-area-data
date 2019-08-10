@@ -35,12 +35,16 @@ def forensic(postcode_regex):
     psq_min = per_square_metre_by_postcode_and_type(postcode_regex, stat='min')
     psq_max = per_square_metre_by_postcode_and_type(postcode_regex, stat='max')
     psq_med = per_square_metre_by_postcode_and_type(postcode_regex, stat='median')
+    psq_mean = per_square_metre_by_postcode_and_type(postcode_regex, stat='mean')
     for ptype in ('House', 'Flat'):
         pylab.figure()
-        ax = psq_med[ptype].plot(color='b')
-        psq_min[ptype].plot(ax=ax, color='b', linestyle=':')
-        psq_max[ptype].plot(ax=ax, color='b', linestyle=':')
+        ax = psq_med[ptype].plot(color='b', label='median')
+        ax = psq_mean[ptype].plot(color='g', label='mean')
+        psq_min[ptype].plot(ax=ax, color='b', linestyle=':', label='max')
+        psq_max[ptype].plot(ax=ax, color='b', linestyle=':', label='min')
         ax.set_title('%ss in %s'% (ptype, postcode_regex))
+        ax.set_ylabel('GBP per square metre')
+        ax.legend()
     pylab.show()
 
 
