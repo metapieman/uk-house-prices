@@ -70,7 +70,10 @@ data/reduced/all.csv.gz:  $(ALL_REDUCED_FILES)
 	sort --merge $^ | gzip > $@.tmp
 	mv $@.tmp $@
 
-# E.g.:make data/addresses/2015.txt
+# E.g.
+#
+# make data/reduced/2015.txt
+#
 # These files are sorted, for easy merging.
 data/reduced/%.csv:  data/latest/pp-%.csv
 	mkdir -p data/reduced
@@ -132,6 +135,9 @@ data/enhanced-with-energy-data/%.csv.gz:  data/latest/pp-%.csv data/full-address
 	scripts/join-lr-and-energy-data ./header.csv data/enhanced-with-energy-data/$*.csv $^
 	gzip -f data/enhanced-with-energy-data/$*.csv
 
+# For a given Land Registry yearly file, extract full
+# addresses. Number of lines will be the same.
+#
 # E.g., make data/full-addresses/2017.csv.gz
 data/full-addresses/%.csv.gz:  data/latest/pp-%.csv
 	mkdir -p $$(dirname $@)
@@ -141,11 +147,18 @@ data/full-addresses/%.csv.gz:  data/latest/pp-%.csv
 	gzip -f data/full-addresses/$*.csv
 
 # Combined energy certificate data for all boroughs, with only the
-# information we need.
+# information we need: FULL_ADDRESS, POSTCODE, PROPERTY_TYPE,
+# TOTAL_FLOOR_AREA
 energy-certificates/reduced.csv.gz:  $$(shell scripts/all-reduced-energy-files)
 	scripts/concat-reduced-energy-files energy-certificates/reduced.csv $^
 	gzip -f energy-certificates/reduced.csv
 
+# For a given certificates file, produce a reduced version containing
+# only the information we need. Number of lines will be the same.
+#
+# E.g.:
+#
+# make energy-certificates/domestic-E09000017-Hillingdon/reduced.csv.gz
 energy-certificates/%/reduced.csv.gz:  energy-certificates/%/certificates.csv energy-certificates/%/addresses.csv.gz
 	scripts/create-reduced-energy-file \
            energy-certificates/$*/reduced.csv \
@@ -153,6 +166,12 @@ energy-certificates/%/reduced.csv.gz:  energy-certificates/%/certificates.csv en
            energy-certificates/$*/addresses.csv.gz
 	gzip -f energy-certificates/$*/reduced.csv
 
+# For a given certificates file, produce a file containing the full
+# address for each line.
+#
+# E.g.:
+#
+# make energy-certificates/domestic-E09000017-Hillingdon/addresses.csv.gz
 energy-certificates/%/addresses.csv.gz:  energy-certificates/%/certificates.csv
 	set -o pipefail && \
             scripts/extract-address-fields-from-energy-csv $< | tr ',' ' ' | sed 's/\ \+/\ /g' | \
