@@ -1,5 +1,7 @@
 SHELL := /bin/bash
 
+.SECONDARY:
+
 .SECONDEXPANSION:
 
 ALL_YEARS=$(shell ./scripts/all-years)
