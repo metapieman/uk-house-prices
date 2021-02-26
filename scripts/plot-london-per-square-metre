@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
@@ -90,9 +90,9 @@ data = data.rename(columns={'LOCALAUTHORITY': 'LOCAL AUTHORITY'})
 
 value_column = '%s price per square metre'% stat
 data = pd.pivot_table(data, values=value_column,
-                      index='DATE', columns='LOCAL AUTHORITY').sort()
+                      index='DATE', columns='LOCAL AUTHORITY').sort_index()
 
-latest = data.irow(-1).sort(ascending=False, inplace=False)
+latest = data.iloc[-1].sort_values(ascending=False, inplace=False)
 
 data_source_description = ('DATA USED: LAND REGISTRY PRICE PAID DATA, '
                            'ENERGY PERFORMANCE OF BUILDINGS CERTIFICATES DATA')
