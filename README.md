@@ -56,6 +56,6 @@ domestic-E06000010-Kingston-upon-Hull-City-of
 ```
 Having done that, you can then create per-square-metre plots as follows:
 
-<code>make data/plots/per_square_metre/london_[STATISTIC]\_[AGE]\_[PROPERTY TYPE].pdf </code>
+<code>make plots/per_square_metre/london_[STATISTIC]\_[AGE]\_[PROPERTY TYPE].pdf </code>
 
 Here, replace ```[STATISTIC]``` with ```mean``` or ```median```, ```[AGE]``` with ```period``` or ```newbuild```, and ```[PROPERTY TYPE]``` with ```flat```, ```terraced```, ```semi``` or ```detached```.
