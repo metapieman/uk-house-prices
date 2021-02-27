@@ -60,7 +60,7 @@ def get_query():
 
 query = get_query()
 
-reduced_data = { grouping: pd.DataFrame() for grouping in list_of_groupings }
+reduced_data = { grouping['name']: pd.DataFrame() for grouping in list_of_groupings }
 for enhanced in all_enhanced:
     data = pd.read_csv(enhanced, parse_dates=['DATE'])
     for grouping in list_of_groupings:
@@ -76,17 +76,17 @@ for enhanced in all_enhanced:
         grouping_data['YEAR_MONTH'] = grouping_data['YEAR']*100 + grouping_data['MONTH']
         grouping_data = grouping_data.rename(columns={'LOCALAUTHORITY': 'LOCAL AUTHORITY'})
 
-        reduced_data[grouping] = pd.concat([reduced_data[grouping], grouping_data])
+        reduced_data[grouping['name']] = pd.concat([reduced_data[grouping['name']], grouping_data])
 
 data = reduced_data
 
 def remove_most_recent_month(data):
     for grouping in list_of_groupings:
-        df = data[grouping]
+        df = data[grouping['name']]
         l.info(f'for {grouping}, there are {len(df)} rows before removing most recent month')
         df = df[df.YEAR_MONTH != df.YEAR_MONTH.max()]
         l.info(f'for {grouping}, there are {len(df)} rows after removing most recent month')
-        data[grouping] = df
+        data[grouping['name']] = df
 
 remove_most_recent_month(data)
 
