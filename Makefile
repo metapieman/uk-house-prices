@@ -15,63 +15,6 @@ ALL_AREA_DATA_FILES=$(foreach year,$(ALL_YEARS),data/enhanced-with-energy-data/$
 AREA_DATA_IPY: $(ALL_AREA_DATA_FILES)
 	./explore-area-data $^
 
-# TODO: Change to version with postcode
-# E.g.: make data/index_data/UK_20160101_20160201.from_python.csv
-data/index_data/%.from_python.csv:   data/index_data/multisales.csv.gz
-	mkdir -p data/index
-	zcat $< | scripts/create-index.py $* > $@.tmp
-	mv $@.tmp $@
-
-# # E.g., make data/index_values/NorthWestLondon/mean/monthly/collected.csv
-data/index_values/%/collected.csv:  $$(shell scripts/get-collected-dependencies.sh $$*)
-	mkdir -p $$(dirname $@)
-	scripts/gather-stats.py $^ > $@.tmp
-	mv $@.tmp $@
-
-# E.g., make data/index_values/NorthWestLondon/mean/20160101_20160201.json
-data/index_values/%.json:  $$(shell scripts/get-index-dependencies.py $$*)
-	mkdir -p $$(dirname $@)
-	scripts/calculate-index.py $^ $$(basename $$(dirname $@)) > $@.tmp
-	mv $@.tmp $@
-
-# E.g.: make data/index_data/20160101_20160201.csv
-data/index_data/%.csv:  data/index_data/multisales.binary \
-                        bin/create_index_binary_format \
-                        data/index_data/dates.txt
-	mkdir -p $$(dirname $@)
-	bin/create_index_binary_format data/index_data/dates.txt \
-            data/index_data/multisales.binary \
-            $(shell echo $* | tr -s '_' ' ') > $@.tmp
-	mv $@.tmp $@
-
-data/index_data/dates.txt:  data/latest/$$(shell ls data/latest  | sort -r | head -n 1)
-	LAST_DATE=$$(cut -d ',' -f 3 data/latest/pp-2016.csv | \
-                     cut -d ' ' -f 1 | \
-                     tr -d '"-' | \
-                     sort -u | \
-                     tail -n 1) && \
-          END_DATE=$$(date +%Y%m%d -d "$$LAST_DATE +1 day") && \
-          scripts/create-dates.sh $$END_DATE > $@.tmp
-	mv $@.tmp $@
-
-bin/create_index_binary_format:  src/create_index_binary_format.cpp
-	mkdir -p $$(dirname $@)
-	g++ --std c++0x $< -o $@
-
-data/index_data/multisales.binary: data/reduced/all.csv.gz
-	mkdir -p data/index_data
-	(set -o pipefail; zcat $< | scripts/get-multisales-binary-format.py $@.tmp)
-	mv $@.tmp $@
-
-data/index_data/multisales.csv.gz: data/reduced/all.csv.gz
-	mkdir -p data/index_data
-	(set -o pipefail; zcat $< | scripts/get-multisales.py | gzip > $@.tmp)
-	mv $@.tmp $@
-
-data/reduced/all.csv.gz:  $(ALL_REDUCED_FILES)
-	sort --merge $^ | gzip > $@.tmp
-	mv $@.tmp $@
-
 # E.g.
 #
 # make data/reduced/2015.txt
