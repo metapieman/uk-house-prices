@@ -55,6 +55,20 @@ data/summaries_by_year/%.csv:  data/latest/pp-%.csv
 	./scripts/write_summary.py $< ./header.csv  > $@.tmp
 	mv $@.tmp $@
 
+
+ALL_ENHANCED=$(foreach year,$(ALL_YEARS),data/enhanced-with-energy-data/$(year).csv.gz)
+
+# % should be STAT_AGE_TYPE
+#
+# E.g.:
+#
+# make plots/per_square_metre/groupings/hampstead_and_highgate_mean_period_flat.pdf
+plots/per_square_metre/groupings/%.pdf:  \
+  $(ALL_ENHANCED) \
+  plots/per_square_metre/groupings/$$(shell basename $$@ | cut -d'_' -f1,2,3).json
+	scripts/plot-grouping-per-square-metre $@.tmp.pdf $(ALL_ENHANCED)
+	mv $@.tmp.pdf $@
+
 ALL_SUMMARIES_PER_SQUARE_METRE=$(foreach year,$(ALL_YEARS),data/summaries-by-square-metre/$(year).csv)
 
 # % should be STAT_AGE_TYPE

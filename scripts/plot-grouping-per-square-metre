@@ -1,0 +1,142 @@
+#! /usr/bin/env python3
+
+import groupings
+import json
+import logging
+from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.pyplot as plt
+import os
+import pandas as pd
+import seaborn as sns
+import sys
+
+logging.basicConfig(
+    format='%(asctime)s %(levelname)s %(pathname)s [line %(lineno)d] %(message)s',
+    level=logging.INFO
+)
+
+l = logging.getLogger(__name__)
+
+output_path = sys.argv[1]
+all_enhanced = sys.argv[2:]
+
+assert output_path.endswith('.tmp.pdf')
+
+stat, age, property_type = os.path.basename(output_path).split('.')[0].split('_')[-3:]
+
+assert stat in ('mean', 'median')
+assert age in ('period', 'newbuild')
+assert property_type in ('flat', 'terraced', 'semi', 'detached', 'other')
+
+def get_groupings():
+    spec_file = os.path.join(os.path.dirname(output_path),
+                        '_'.join(os.path.basename(output_path).split('.')[0].split('_')[:-3]) + '.json'
+    )
+    with open(spec_file) as f:
+        return json.load(f)
+
+list_of_groupings = get_groupings()
+
+def get_query():
+    age_to_code = {
+        'period': 'N',
+        'newbuild': 'Y',
+    }
+
+    property_type_to_code = {
+        'flat': 'F',
+        'terraced': 'T',
+        'semi': 'S',
+        'detached': 'D',
+        'other': 'O',
+    }
+
+    query = 'PROPERTYAGE=="%s" and PROPERTYTYPE=="%s"'% (
+        age_to_code[age],
+        property_type_to_code[property_type]
+    )
+
+    return query
+
+query = get_query()
+
+reduced_data = { grouping: pd.DataFrame() for grouping in list_of_groupings }
+for enhanced in all_enhanced:
+    data = pd.read_csv(enhanced, parse_dates=['DATE'])
+    for grouping in list_of_groupings:
+        l.info(f'getting data for grouping {grouping} in {enhanced}')
+        grouping_data = groupings.get_records(grouping, data)
+        grouping_data['PRICE_PER_SQUARE_METRE'] = grouping_data['PRICE']/grouping_data['TOTAL_FLOOR_AREA']
+        l.info(f'there are {len(grouping_data)} rows before restricting to {age}, {property_type}')
+        grouping_data = grouping_data.query(query)
+        l.info(f'there are {len(grouping_data)} rows after restricting to {age}, {property_type}')
+
+        grouping_data['MONTH'] = grouping_data.DATE.dt.month
+        grouping_data['YEAR'] = grouping_data.DATE.dt.year
+        grouping_data['YEAR_MONTH'] = grouping_data['YEAR']*100 + grouping_data['MONTH']
+        grouping_data = grouping_data.rename(columns={'LOCALAUTHORITY': 'LOCAL AUTHORITY'})
+
+        reduced_data[grouping] = pd.concat([reduced_data[grouping], grouping_data])
+
+data = reduced_data
+
+def remove_most_recent_month(data):
+    for grouping in list_of_groupings:
+        df = data[grouping]
+        l.info(f'for {grouping}, there are {len(df)} rows before removing most recent month')
+        df = df[df.YEAR_MONTH != df.YEAR_MONTH.max()]
+        l.info(f'for {grouping}, there are {len(df)} rows after removing most recent month')
+        data[grouping] = df
+
+remove_most_recent_month(data)
+
+def summarize_data(data):
+    output = pd.DataFrame()
+    counts = pd.DataFrame()
+    for grouping, df in data.items():
+        groupby_object = df.groupby('YEAR_MONTH')['PRICE_PER_SQUARE_METRE']
+        if stat == 'mean':
+            summary = groupby_object.mean()
+        elif stat == 'median':
+            summary = groupby_object.median()
+        output[grouping] = summary
+        counts[grouping] = groupby_object.count()
+
+    def convert_index(df):
+        # Convert an integer year/month (e.g., 202001) to a datetime
+        # on the first of the month.
+        df.index = pd.to_datetime(df.index*100 + 1, format='%Y%m%d')
+        df.index.name = ''
+
+    convert_index(output)
+    convert_index(counts)
+
+    return output, counts
+
+stat_values, counts = summarize_data(data)
+
+value_column = '%s price per square metre'% stat
+
+data_source_description = ('DATA USED: LAND REGISTRY PRICE PAID DATA, '
+                           'ENERGY PERFORMANCE OF BUILDINGS CERTIFICATES DATA')
+
+type_descriptions = {
+    'flat': 'flats',
+    'terraced': 'terraced houses',
+    'semi': 'semi-detached houses',
+    'detached': 'detached houses',
+}
+title = f'{stat} price per square metre for {age} {type_descriptions[property_type]}'
+
+with PdfPages(output_path) as pdf:
+    fig = plt.figure(figsize=(20.0, 20.0))
+    ax = fig.add_subplot(211)
+    ax.set_title(title)
+    stat_values.plot(ax=ax)
+    ax = fig.add_subplot(212)
+    ax.set_title('number of sales')
+    counts.plot(ax=ax)
+
+    fig.text(0.01, 0.01, data_source_description)
+    pdf.savefig()
+    plt.close()
