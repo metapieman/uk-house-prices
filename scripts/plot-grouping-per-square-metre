@@ -136,7 +136,7 @@ with PdfPages(output_path) as pdf:
     ax.set_title(title)
     stat_values.plot(ax=ax)
     ax = fig.add_subplot(212)
-    ax.set_title('number of sales')
+    ax.set_title('number of sales per month')
     counts.plot(ax=ax)
 
     fig.text(0.01, 0.01, data_source_description)
