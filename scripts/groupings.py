@@ -8,14 +8,19 @@ def get_records_by_first_half_of_postcode(first_half_of_postcode, data):
     return data[data.POSTCODE.str.startswith(f"{first_half_of_postcode} ")]
 
 @lru_cache()
+def postcode_data():
+    postcodes = pd.read_csv('postcodes.zip')
+    return postcodes
+
+@lru_cache()
 def postcodes_by_ward(ward):
-    postcodes = pd.read_csv('postcodes.zip')\
-                             .query(f'Ward == "{ward}"').Postcode
+    postcodes = postcode_data()
+    postcodes = postcodes.query(f'Ward == "{ward}"').Postcode
     return postcodes
 
 def get_records_by_administrative_area(area, data):
     postcodes = postcodes_by_ward(area)
-    l.info(f'found {len(postcodes)} postcodes')
+    l.info(f'found {len(postcodes)} postcodes for {area}')
     reduced_data = pd.DataFrame()
     l.info(f'extracting data for postcodes in {area}')
     reduced_data = data[data['POSTCODE'].isin(postcodes)]
