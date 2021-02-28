@@ -62,10 +62,10 @@ ALL_ENHANCED=$(foreach year,$(ALL_YEARS),data/enhanced-with-energy-data/$(year).
 #
 # E.g.:
 #
-# make plots/per_square_metre/groupings/hampstead_and_highgate_mean_period_flat.pdf
+# make plots/per_square_metre/groupings/hampstead_and_highgate.mean_period_flat.pdf
 plots/per_square_metre/groupings/%.pdf:  \
   $(ALL_ENHANCED) \
-  plots/per_square_metre/groupings/$$(shell basename $$@ | cut -d'_' -f1,2,3).json
+  plots/per_square_metre/groupings/$$(shell basename $$@ | sed 's/\.[^\.]\+\.pdf//').json
 	scripts/plot-grouping-per-square-metre $@.tmp.pdf $(ALL_ENHANCED)
 	mv $@.tmp.pdf $@
 

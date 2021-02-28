@@ -22,7 +22,9 @@ all_enhanced = sys.argv[2:]
 
 assert output_path.endswith('.tmp.pdf')
 
-stat, age, property_type = os.path.basename(output_path).split('.')[0].split('_')[-3:]
+stat, age, property_type = os.path.basename(output_path).split('.')[-4].split('_')[-3:]
+
+l.info(f'stat={stat}, age={age}, property_type={property_type}')
 
 assert stat in ('mean', 'median')
 assert age in ('period', 'newbuild')
@@ -30,7 +32,7 @@ assert property_type in ('flat', 'terraced', 'semi', 'detached', 'other')
 
 def get_groupings():
     spec_file = os.path.join(os.path.dirname(output_path),
-                        '_'.join(os.path.basename(output_path).split('.')[0].split('_')[:-3]) + '.json'
+                        os.path.basename(output_path).split('.')[0] + '.json'
     )
     with open(spec_file) as f:
         return json.load(f)
