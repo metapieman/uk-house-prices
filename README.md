@@ -26,7 +26,7 @@ The Land Registry updates its data around the end of each month. If the data has
 To generate pdf plots of the monthly median and mean prices of London
 flats and houses by borough, do this:
 
-<code>make plots/london_period_{flats,houses}_{median,mean}.pdf
+<code>make plots/london_period_{flats,houses}_{median,mean}.pdf</code>
 
 (You can parallelize this command by using the <code>-j</code> option
 to <code>make</code>.)
