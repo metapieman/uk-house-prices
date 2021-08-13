@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 import datetime
 import numpy
@@ -9,7 +9,7 @@ def decorate_data(fname, headerfile):
     """Get a pandas DataFrame from a land registry file, with a few extra
     useful columns.
     """
-    df = pandas.DataFrame.from_csv(fname, header=None, index_col=False)
+    df = pandas.read_csv(fname, header=None, index_col=False)
     with open(headerfile) as f:
         header = f.readline().rstrip()
         columns = header.split(',')
@@ -66,10 +66,10 @@ def summarize_data(df, remove_category_b=True):
     data.columns.names = colnames
     melted = pandas.melt(data.reset_index(), id_vars=['Month'])
     melted['Type'] = 'House'
-    melted['Type'][melted['IsFlat']] = 'Flat'
+    melted.loc[melted['IsFlat'], 'Type'] = 'Flat'
     del melted['IsFlat']
     melted['Age'] = 'Period'
-    melted['Age'][melted['NewBuild']] = 'New-build'
+    melted.loc[melted['NewBuild'], 'Type'] = 'New-build'
     del melted['NewBuild']
     cols = []
     for c in melted.columns:
