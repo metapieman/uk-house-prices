@@ -6,7 +6,10 @@ import pandas as pd
 l = logging.getLogger(__name__)
 
 def get_records_by_first_half_of_postcode(first_half_of_postcode, data):
-    return data[data.pcd7.str.startswith(f"{first_half_of_postcode} ")]
+    if len(first_half_of_postcode) <= 3:
+        return data[data.pcd7.str.startswith(f"{first_half_of_postcode} ")]
+    else:
+        return data[data.pcd7.str.startswith(f"{first_half_of_postcode}")]
 
 @lru_cache()
 def postcode_data():
@@ -24,7 +27,7 @@ def get_records_by_administrative_area(area, data):
     l.info(f'found {len(postcodes)} postcodes for {area}')
     reduced_data = pd.DataFrame()
     l.info(f'extracting data for postcodes in {area}')
-    reduced_data = data[data['POSTCODE'].isin(postcodes)]
+    reduced_data = data[data['POSTCODE'].str.replace(' ', '').isin(postcodes.str.replace(' ', ''))]
     return reduced_data
 
 def get_records(grouping, data):
