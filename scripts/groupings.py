@@ -10,7 +10,7 @@ def get_records_by_first_half_of_postcode(first_half_of_postcode, data):
 
 @lru_cache()
 def postcode_data():
-    postcodes = pd.read_csv('pcd11_par11_wd11_lad11_ew_lu.csv.gz')
+    postcodes = pd.read_csv('pcd11_par11_wd11_lad11_ew_lu.csv.gz', low_memory=False)
     return postcodes
 
 @lru_cache()
