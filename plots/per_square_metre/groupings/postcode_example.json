@@ -1,26 +1,26 @@
 [
     {
-        "name": "NW3",
+        "name": "Hampstead",
         "type": "first half of postcode",
         "postcode": "NW3"
     },
     {
-        "name": "NW1",
+        "name": "Camden",
         "type": "first half of postcode",
         "postcode": "NW1"
     },
     {
-        "name": "N8",
+        "name": "Crouch End",
         "type": "first half of postcode",
         "postcode": "N8"
     },
     {
-        "name": "N10",
+        "name": "Muswell Hill",
         "type": "first half of postcode",
         "postcode": "N10"
     },
     {
-        "name": "N6",
+        "name": "Highgate",
         "type": "first half of postcode",
         "postcode": "N6"
     }
