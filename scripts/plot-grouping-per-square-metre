@@ -67,15 +67,15 @@ for enhanced in all_enhanced:
     data = pd.read_csv(enhanced, parse_dates=['DATE'])
     for grouping in list_of_groupings:
         l.info(f'getting data for grouping {grouping} in {enhanced}')
-        grouping_data = groupings.get_records(grouping, data)
-        grouping_data['PRICE_PER_SQUARE_METRE'] = grouping_data['PRICE']/grouping_data['TOTAL_FLOOR_AREA']
+        grouping_data = groupings.get_records(grouping, data).copy()
+        grouping_data.loc[:,'PRICE_PER_SQUARE_METRE'] = grouping_data['PRICE']/grouping_data['TOTAL_FLOOR_AREA']
         l.info(f'there are {len(grouping_data)} rows before restricting to {age}, {property_type}')
-        grouping_data = grouping_data.query(query)
+        grouping_data = grouping_data.query(query).copy()
         l.info(f'there are {len(grouping_data)} rows after restricting to {age}, {property_type}')
 
-        grouping_data['MONTH'] = grouping_data.DATE.dt.month
-        grouping_data['YEAR'] = grouping_data.DATE.dt.year
-        grouping_data['YEAR_MONTH'] = grouping_data['YEAR']*100 + grouping_data['MONTH']
+        grouping_data.loc[:, 'MONTH'] = grouping_data.DATE.dt.month
+        grouping_data.loc[:, 'YEAR'] = grouping_data.DATE.dt.year
+        grouping_data.loc[:, 'YEAR_MONTH'] = grouping_data['YEAR']*100 + grouping_data['MONTH']
         grouping_data = grouping_data.rename(columns={'LOCALAUTHORITY': 'LOCAL AUTHORITY'})
 
         reduced_data[grouping['name']] = pd.concat([reduced_data[grouping['name']], grouping_data])
