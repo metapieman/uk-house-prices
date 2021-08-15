@@ -1,21 +1,22 @@
 from functools import lru_cache
+import gzip
 import logging
 import pandas as pd
 
 l = logging.getLogger(__name__)
 
 def get_records_by_first_half_of_postcode(first_half_of_postcode, data):
-    return data[data.POSTCODE.str.startswith(f"{first_half_of_postcode} ")]
+    return data[data.pcd7.str.startswith(f"{first_half_of_postcode} ")]
 
 @lru_cache()
 def postcode_data():
-    postcodes = pd.read_csv('postcodes.zip')
+    postcodes = pd.read_csv('pcd11_par11_wd11_lad11_ew_lu.csv.gz')
     return postcodes
 
 @lru_cache()
 def postcodes_by_ward(ward):
     postcodes = postcode_data()
-    postcodes = postcodes.query(f'Ward == "{ward}"').Postcode
+    postcodes = postcodes.query(f'wd11nm == "{ward}"').pcd7
     return postcodes
 
 def get_records_by_administrative_area(area, data):
