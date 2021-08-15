@@ -128,13 +128,15 @@ type_descriptions = {
     'semi': 'semi-detached houses',
     'detached': 'detached houses',
 }
-title = f'{stat} price per square metre for {age} {type_descriptions[property_type]}'
+title = f'{stat} price (£) per square metre for {age} {type_descriptions[property_type]}'
 
 with PdfPages(output_path) as pdf:
     fig = plt.figure(figsize=(20.0, 20.0))
     ax = fig.add_subplot(211)
-    ax.set_title(f'{title} (smoothed)')
-    stat_values.ewm(halflife=6).mean().plot(ax=ax)
+    halflife_months = 6
+    ax.set_title(f'{title} (smoothed with halflife {halflife_months} months)')
+    smoothed_mean = stat_values.ewm(halflife=halflife_months).mean()
+    smoothed_mean.plot(ax=ax)
     ax = fig.add_subplot(212)
     ax.set_title(f'{title} (not smoothed)')
     stat_values.plot(ax=ax)
@@ -145,7 +147,7 @@ with PdfPages(output_path) as pdf:
     fig = plt.figure(figsize=(20.0, 20.0))
     ax = fig.add_subplot(211)
     ax.set_title('number of sales per month (smoothed)')
-    counts.ewm(halflife=6).mean().plot(ax=ax)
+    counts.ewm(halflife=halflife_months).mean().plot(ax=ax)
     ax = fig.add_subplot(212)
     ax.set_title('number of sales per month (not smoothed)')
     counts.plot(ax=ax)
