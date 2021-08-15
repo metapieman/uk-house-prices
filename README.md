@@ -1,14 +1,23 @@
 # uk-house-prices
 
-## Short description
+The aim of this project is to make it easy to compare property prices per square metre across [United Kingdom wards](https://en.wikipedia.org/wiki/Wards_and_electoral_divisions_of_the_United_Kingdom) or postcodes.
 
-This is a Makefile-based project to study UK house prices. It uses Land Registry data for paid prices, and (optionally) Energy Performance Certificate data for area information. Currently, it can plot statistics such as median/mean prices and transaction volumes for London boroughs. It may also be useful for other regions, simply as a tool for maintaining an up-to-date Land Registry dataset.
+Here's an example, showing the median price per square metre for period flats across several wards in the London borough of Camden:
+
+![camden](/camden_flats_by_ward.png?raw=true "Camden flats by ward")
+
+The code relies on the following data sources:
+
+- Land Registry data for sold prices
+- Energy Performance Certificate data for area information
+- The ONS Postcode Directory (ONSPD)
+ 
+The project is a little unusual: it is based around the GNU Make tool, which is used both for downloading Land Registry data, and for creating PDF plots.
 
 ## Requirements
 
 - GNU Make
 - Bash shell
-- R with dplyr, ggplot2 libraries installed
 - Python with numpy, pandas libraries installed
 
 ## Usage
@@ -23,6 +32,10 @@ The Land Registry updates its data around the end of each month. If the data has
 
 ### Creating monthly plots of London statistics
 
+In addition to the plots by ward or postcode, there is special extra functionality to create PDFs of prices over all London boroughs in a large grid. Note that these are *not* per-square-metre prices, they are full prices.
+
+To use this extra functionality, you must have have installed <code>R</code>, along with the <code>dplyr</code>, <code>ggplot2</code> libraries.
+
 To generate pdf plots of the monthly median and mean prices of London
 flats and houses by borough, do this:
 
@@ -31,7 +44,7 @@ flats and houses by borough, do this:
 (You can parallelize this command by using the <code>-j</code> option
 to <code>make</code>.)
 
-Here's a sample of what the plots will look like:
+Here's a sample of what the plots will look like (but note that you will see all boroughs in the plots, not just the small selection shown here):
 
 ![London plot sample](/plots.png?raw=true "London plot sample")
 
