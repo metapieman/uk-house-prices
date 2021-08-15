@@ -55,7 +55,7 @@ domestic-E06000010-Kingston-upon-Hull-City-of
 
 ## Creating per-square-metre plots
 
-You can specify the wards and/or postcodes to plot in a JSON file, which must be saved in <code>plots/per_square_metre/groupings</code>. You will find two example JSON files in the repo: <code>ward_example.json</code> and <code>postcode_example.json</code>. The latter file looks like this:
+To specify a list of wards and/or postcodes to plot, you must save a JSON file inside <code>plots/per_square_metre/groupings/</code>. You will find two sample JSON files in the repo: <code>ward_example.json</code> and <code>postcode_example.json</code>. The latter file looks like this:
  
 ```
 [
@@ -98,7 +98,7 @@ make plots/per_square_metre/groupings/postcode_example.[STATISTIC]_[AGE]_[PROPER
 
 Here, replace ```[STATISTIC]``` with ```mean``` or ```median```, ```[AGE]``` with ```period``` or ```newbuild```, and ```[PROPERTY TYPE]``` with ```flat```, ```terraced```, ```semi``` or ```detached```.
 
-To create all possible PDFs in a single command, you could do this:
+To create all possible PDFs with a single command, you could do this:
 
 ```
 make plots/per_square_metre/groupings/postcode_example.{mean,median}_{period,newbuild}_{flat,terraced,semi,detached}.pdf
