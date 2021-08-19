@@ -109,7 +109,7 @@ to ```make```.)
 
 See ```ward_example.json``` for how to plot by ward.
 
-To create your own plots, simply create a JSON file, and run which <code>make</code> command you like on it, as above.
+To create your own plots, simply create a JSON file, and run whichever <code>make</code> command(s) you like on it, as above.
 
 ## Creating monthly plots of London statistics
 
