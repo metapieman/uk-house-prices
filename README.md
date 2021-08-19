@@ -51,7 +51,7 @@ domestic-E06000009-Blackpool
 domestic-E06000010-Kingston-upon-Hull-City-of
 ```
 
-It is important to realise that not all properties appear in the EPC dataset. This means that when creating per-square-metre plots (see below), some sales in the Land Registry data go unused. This is unfortunate, but seems unavoidable.
+Unfortunately, not all properties appear in the EPC dataset. This means that when creating per-square-metre plots (see below), some sales in the Land Registry data go unused. This seems seems unavoidable.
 
 ## Creating per-square-metre plots
 
