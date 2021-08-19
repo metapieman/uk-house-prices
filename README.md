@@ -18,7 +18,7 @@ The code is a little unusual: it is based around the GNU Make tool, which is use
 
 - GNU Make
 - Bash shell
-- Python with numpy, pandas libraries installed
+- Python 3 with numpy, pandas libraries installed
 
 ## Setting up the data
 
