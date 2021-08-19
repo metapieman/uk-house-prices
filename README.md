@@ -34,7 +34,7 @@ The Land Registry updates its data around the end of each month. If the data has
 
 ### Downloading the Energe Performance Certificate data
 
-The UK Department For Communities and Local Government publishes a dataset containing Energy Performance Certificates (see ```https://epc.opendatacommunities.org/```). Since EPCs contain area information, it is possible to link this dataset with Land Registry data to obtain per-square-metre prices for many properties.
+The UK Department For Communities and Local Government publishes a dataset containing Energy Performance Certificates (see https://epc.opendatacommunities.org/). Since EPCs contain area information, it is possible to link this dataset with Land Registry data to obtain per-square-metre prices for many properties.
 
 **Note.** Not all properties appear in the EPC dataset. This means, of course, that when creating per-square-metre plots (see below), some sales in the Land Registry data go unused.
 
