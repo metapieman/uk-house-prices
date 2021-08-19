@@ -6,13 +6,13 @@ Here's an example, showing the median price per square metre for period flats ac
 
 ![camden](/camden_flats_by_ward.png?raw=true "Camden flats by ward")
 
-The code relies on the following data sources:
+The project relies on the following data sources:
 
 - Land Registry data for sold prices
 - Energy Performance Certificate data for area information
 - The ONS Postcode Directory (ONSPD)
  
-The project is a little unusual: it is based around the GNU Make tool, which is used both for downloading Land Registry data, and for creating PDF plots.
+The code is a little unusual: it is based around the GNU Make tool, which is used both for downloading Land Registry data, and for creating PDF plots.
 
 ## Requirements
 
