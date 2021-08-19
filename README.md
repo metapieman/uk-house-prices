@@ -34,7 +34,7 @@ The Land Registry updates its data around the end of each month. If the data has
 
 ### Downloading the Energe Performance Certificate data
 
-The UK Department For Communities and Local Government publishes a dataset containing Energy Performance Certificates (see https://epc.opendatacommunities.org/). Since EPCs contain area information, it is possible to link this dataset with Land Registry data to obtain per-square-metre prices for many properties.
+The UK Department For Communities and Local Government publishes a dataset containing Energy Performance Certificates (see https://epc.opendatacommunities.org/). Since EPCs contain area information, it is possible to link this dataset with Land Registry data to obtain per square metre prices for many properties.
 
 You must download the complete EPC dataset and unzip it into a subdirectory <code>energy-certificates</code> in the top level directory of this repo. Having done so, if you run <code>ls energy-certificates |  head</code> from the top level directory, you should see something like the following:
 
@@ -51,9 +51,9 @@ domestic-E06000009-Blackpool
 domestic-E06000010-Kingston-upon-Hull-City-of
 ```
 
-Unfortunately, not all properties appear in the EPC dataset. This means that when creating price per-square-metre plots (see below), some sales in the Land Registry data go unused. This seems unavoidable.
+Unfortunately, not all properties appear in the EPC dataset. This means that when creating price per square metre plots (see below), some sales in the Land Registry data go unused. This seems unavoidable.
 
-## Creating price per-square-metre plots
+## Creating price per square metre plots
 
 To specify a list of wards and/or postcodes to plot, you must save a JSON file inside <code>plots/per_square_metre/groupings/</code>. You will find two sample JSON files in the repo: <code>ward_example.json</code> and <code>postcode_example.json</code>. The latter file looks like this:
  
@@ -90,7 +90,7 @@ To specify a list of wards and/or postcodes to plot, you must save a JSON file i
 
 The ```name``` field is an arbitrary name to display in the plot legend.
 
-From this JSON file, you can generate PDF files containing per-square-metre plots as follows:
+From this JSON file, you can generate PDF files containing price per square metre plots as follows:
 
 ```
 make plots/per_square_metre/groupings/postcode_example.[STATISTIC]_[AGE]_[PROPERTY TYPE].pdf
@@ -113,7 +113,7 @@ To create your own plots, simply create a JSON file, and run whichever <code>mak
 
 ## Creating monthly plots of London statistics
 
-In addition to the plots by ward or postcode, there is special extra functionality to create PDFs of prices over all London boroughs in a large grid. Note that these are *not* per-square-metre prices, they are full prices.
+In addition to the plots by ward or postcode, there is special extra functionality to create PDFs of prices over all London boroughs in a large grid. Note that these are *not* per square metre prices, they are full prices.
 
 To use this extra functionality, you must have have installed <code>R</code>, along with the <code>dplyr</code>, <code>ggplot2</code> libraries.
 
@@ -130,4 +130,4 @@ Here's a sample of what the plots will look like (but note that you will see all
 ![London plot sample](/plots.png?raw=true "London plot sample")
 
 Currently, new-build properties are not supported for these plots,
-although they are supported for the per-square metre plots.
+although they are supported for the per square metre plots.
