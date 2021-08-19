@@ -51,9 +51,9 @@ domestic-E06000009-Blackpool
 domestic-E06000010-Kingston-upon-Hull-City-of
 ```
 
-Unfortunately, not all properties appear in the EPC dataset. This means that when creating per-square-metre plots (see below), some sales in the Land Registry data go unused. This seems unavoidable.
+Unfortunately, not all properties appear in the EPC dataset. This means that when creating price per-square-metre plots (see below), some sales in the Land Registry data go unused. This seems unavoidable.
 
-## Creating per-square-metre plots
+## Creating price per-square-metre plots
 
 To specify a list of wards and/or postcodes to plot, you must save a JSON file inside <code>plots/per_square_metre/groupings/</code>. You will find two sample JSON files in the repo: <code>ward_example.json</code> and <code>postcode_example.json</code>. The latter file looks like this:
  
