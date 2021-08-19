@@ -36,8 +36,6 @@ The Land Registry updates its data around the end of each month. If the data has
 
 The UK Department For Communities and Local Government publishes a dataset containing Energy Performance Certificates (see https://epc.opendatacommunities.org/). Since EPCs contain area information, it is possible to link this dataset with Land Registry data to obtain per-square-metre prices for many properties.
 
-Not all properties appear in the EPC dataset. This means that when creating per-square-metre plots (see below), some sales in the Land Registry data go unused. This is unfortunate, but seems unavoidable.
-
 You must download the complete EPC dataset and unzip it into a subdirectory <code>energy-certificates</code> in the top level directory of this repo. Having done so, if you run <code>ls energy-certificates |  head</code> from the top level directory, you should see something like the following:
 
 ```
@@ -52,6 +50,8 @@ domestic-E06000008-Blackburn-with-Darwen
 domestic-E06000009-Blackpool
 domestic-E06000010-Kingston-upon-Hull-City-of
 ```
+
+It is important to realise that not all properties appear in the EPC dataset. This means that when creating per-square-metre plots (see below), some sales in the Land Registry data go unused. This is unfortunate, but seems unavoidable.
 
 ## Creating per-square-metre plots
 
