@@ -28,7 +28,7 @@ To download the Land Registry data for the first time, or to update to the lates
 
 <code>make TRY_ALL_UPDATES</code>
 
-(Note: it will take a while to finish.)
+(Note: it will take a while to finish if you are running it for the first time.)
 
 The Land Registry updates its data around the end of each month. If the data hasn't changed since the above command was last run, nothing will be downloaded.
 
