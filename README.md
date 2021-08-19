@@ -18,7 +18,7 @@ The code is a little unusual: it is based around the GNU Make tool, which is use
 
 - GNU Make
 - Bash shell
-- Python 3 with numpy, pandas libraries installed
+- Python 3 with numpy, pandas, seaborn libraries installed
 
 ## Setting up the data
 
@@ -32,7 +32,7 @@ To download the Land Registry data for the first time, or to update to the lates
 
 The Land Registry updates its data around the end of each month. If the data hasn't changed since the above command was last run, nothing will be downloaded.
 
-### Downloading the Energe Performance Certificate data
+### Downloading the Energy Performance Certificate data
 
 The UK Department For Communities and Local Government publishes a dataset containing Energy Performance Certificates (see https://epc.opendatacommunities.org/). Since EPCs contain area information, it is possible to link this dataset with Land Registry data to obtain per square metre prices for many properties.
 
