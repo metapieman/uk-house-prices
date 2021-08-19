@@ -24,7 +24,7 @@ The project is a little unusual: it is based around the GNU Make tool, which is 
 
 ### Downloading the Land Registry data
 
-To download the Land Registry data for the first time, or to update to the latest data, run the following command from the top-level directory of the repository:
+To download the Land Registry data for the first time, or to update to the latest data, run the following command from the top level directory of the repository:
 
 <code>make TRY_ALL_UPDATES</code>
 
