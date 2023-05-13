@@ -7,7 +7,7 @@ import seaborn as sns
 import sys
 
 sns.set_theme()
-sns.set(font_scale=0.6)
+sns.set(font_scale=0.4)
 
 output_path, stat, age, property_type = sys.argv[1:5]
 summaries = sys.argv[5:]
@@ -117,8 +117,6 @@ with PdfPages(output_path) as pdf:
             subplot.set_xlabel('')
     for subplot in subplots[-1]:
         subplot.set_xlabel('MONTH')
-        x_tick_labels = subplot.get_xticklabels()
-        subplot.set_xticklabels(x_tick_labels, rotation=45)
 
     fig.suptitle(title)
     fig.text(0.01, 0.01, data_source_description)
