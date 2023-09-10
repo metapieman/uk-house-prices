@@ -4,9 +4,10 @@ import json
 import os
 import pandas as pd
 import sys
+from typing import List
 
 index_factors = []
-dates  = []
+dates: List[int] = []
 
 for fname in sys.argv[1:]:
     start_date_str, end_date_str, _ = os.path.basename(fname).replace(
@@ -25,4 +26,3 @@ df = pd.DataFrame({
 }).set_index('date')
 
 df.cumprod().reset_index().to_csv(sys.stdout, index=False)
-
