@@ -133,6 +133,7 @@ with PdfPages(output_path) as pdf:
     ax = fig.add_subplot(111)
     ax.set_title(title)
     by_area_bin.plot(ax=ax)
+    ax.set_ylim(bottom=0.0)
     fig.text(0.01, 0.01, data_source_description)
     pdf.savefig()
     plt.close()
