@@ -1,0 +1,138 @@
+#! /usr/bin/env python3
+
+import datetime
+import groupings
+import json
+import logging
+from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+import pandas as pd
+import seaborn as sns
+import sys
+
+logging.basicConfig(
+    format='%(asctime)s %(levelname)s %(pathname)s [line %(lineno)d] %(message)s',
+    level=logging.INFO
+)
+
+l = logging.getLogger(__name__)
+
+output_path = sys.argv[1]
+all_enhanced = sys.argv[2:]
+
+assert output_path.endswith('.tmp.pdf')
+
+def date_from_str(string):
+    return datetime.datetime.strptime(string, '%Y%m%d')
+
+# Example of output_path: plots/per_square_metre/per_square_metre_vs_size/around_highgate.20220101_20230101.median_period_flat.pdf.tmp.pdf
+stat, age, property_type = os.path.basename(output_path).split('.')[-4].split('_')[-3:]
+start_date, end_date = [date_from_str(x) for x in os.path.basename(output_path).split('.')[-5].split('_')]
+
+l.info(f'stat={stat}, age={age}, property_type={property_type}')
+
+assert stat in ('mean', 'median')
+assert age in ('period', 'newbuild')
+assert property_type in ('flat', 'terraced', 'semi', 'detached', 'other')
+
+def get_groupings():
+    spec_file = os.path.join(os.path.dirname(output_path),
+                        os.path.basename(output_path).split('.')[0] + '.json'
+    )
+    with open(spec_file) as f:
+        return json.load(f)
+
+list_of_groupings = get_groupings()
+
+def get_query():
+    age_to_code = {
+        'period': 'N',
+        'newbuild': 'Y',
+    }
+
+    property_type_to_code = {
+        'flat': 'F',
+        'terraced': 'T',
+        'semi': 'S',
+        'detached': 'D',
+        'other': 'O',
+    }
+
+    query = 'PROPERTYAGE=="%s" and PROPERTYTYPE=="%s"'% (
+        age_to_code[age],
+        property_type_to_code[property_type]
+    )
+
+    return query
+
+query = get_query()
+
+reduced_data = { grouping['name']: pd.DataFrame() for grouping in list_of_groupings }
+for enhanced in all_enhanced:
+    data = pd.read_csv(enhanced, parse_dates=['DATE'])
+    data = data[np.logical_and(data.DATE >= start_date, data.DATE <= end_date)]
+    if data.empty: continue
+    for grouping in list_of_groupings:
+        l.info(f'getting data for grouping {grouping} in {enhanced}')
+        grouping_data = groupings.get_records(grouping, data).copy()
+        grouping_data.loc[:,'PRICE_PER_SQUARE_METRE'] = grouping_data['PRICE']/grouping_data['TOTAL_FLOOR_AREA']
+        l.info(f'there are {len(grouping_data)} rows before restricting to {age}, {property_type}')
+        grouping_data = grouping_data.query(query).copy()
+        l.info(f'there are {len(grouping_data)} rows after restricting to {age}, {property_type}')
+
+        grouping_data.loc[:, 'MONTH'] = grouping_data.DATE.dt.month
+        grouping_data.loc[:, 'YEAR'] = grouping_data.DATE.dt.year
+        grouping_data.loc[:, 'YEAR_MONTH'] = grouping_data['YEAR']*100 + grouping_data['MONTH']
+        grouping_data = grouping_data.rename(columns={'LOCALAUTHORITY': 'LOCAL AUTHORITY'})
+
+        reduced_data[grouping['name']] = pd.concat([reduced_data[grouping['name']], grouping_data])
+
+data = reduced_data
+
+def remove_most_recent_month(data):
+    for grouping in list_of_groupings:
+        df = data[grouping['name']]
+        l.info(f'for {grouping}, there are {len(df)} rows before removing most recent month')
+        df = df[df.YEAR_MONTH != df.YEAR_MONTH.max()]
+        l.info(f'for {grouping}, there are {len(df)} rows after removing most recent month')
+        data[grouping['name']] = df
+
+remove_most_recent_month(data)
+
+def summarize_data(data):
+    """We want a dataframe whose columns are grouping names (i.e.,
+    keys in the data dict), rows are area bins, and data values are
+    mean price per square metre.
+
+    """
+    max_area = max([df['TOTAL_FLOOR_AREA'].max() for df in data.values()])
+    bins = [0 + 25*i for i in range(int(np.ceil(max_area/25) + 1))]
+    output = pd.DataFrame()
+    for grouping_name, df in data.items():
+        df['AREA_BIN'] = pd.cut(df['TOTAL_FLOOR_AREA'], bins)
+        output[grouping_name] = df.groupby('AREA_BIN')['PRICE_PER_SQUARE_METRE'].mean()
+    return output
+
+by_area_bin = summarize_data(data)
+
+data_source_description = ('DATA USED: LAND REGISTRY PRICE PAID DATA, '
+                           'ENERGY PERFORMANCE OF BUILDINGS CERTIFICATES DATA')
+
+type_descriptions = {
+    'flat': 'flats',
+    'terraced': 'terraced houses',
+    'semi': 'semi-detached houses',
+    'detached': 'detached houses',
+}
+title = f'{stat} price (£) per square metre for {age} {type_descriptions[property_type]}, by area bin'
+
+with PdfPages(output_path) as pdf:
+    fig = plt.figure(figsize=(20.0, 20.0))
+    ax = fig.add_subplot(111)
+    ax.set_title(title)
+    by_area_bin.plot(ax=ax)
+    fig.text(0.01, 0.01, data_source_description)
+    pdf.savefig()
+    plt.close()

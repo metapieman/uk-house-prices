@@ -75,6 +75,18 @@ ALL_SUMMARIES_PER_SQUARE_METRE=$(foreach year,$(ALL_YEARS),data/summaries-by-squ
 #
 # E.g.:
 #
+# make plots/per_square_metre/vs_size/hampstead_and_highgate.mean_period_flat.pdf
+plots/per_square_metre/vs_size/%.pdf:  \
+  $(ALL_ENHANCED) \
+  plots/per_square_metre/groupings/$$(shell basename $$@ | sed 's/[0-9]\{8\}_[0-9]\{8\}\.//' | sed 's/\.[^\.]\+\.pdf//').json
+	scripts/plot-per-square-metre-vs-size $@.tmp.pdf $(ALL_ENHANCED)
+	mv $@.tmp.pdf $@
+
+
+# % should be STAT_AGE_TYPE
+#
+# E.g.:
+#
 # make plots/per_square_metre/london_mean_period_flat.pdf
 plots/per_square_metre/london_%.pdf:  $(ALL_SUMMARIES_PER_SQUARE_METRE)
 	mkdir -p $$(dirname $@)

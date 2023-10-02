@@ -9,3 +9,4 @@ with open(header_fname) as f:
 df = pd.read_csv(data_fname, names=cols)
 cols = ['PAON', 'SAON', 'Street', 'Postcode', 'Date', 'Price']
 df[cols].to_csv(sys.stdout, index=False, header=None)
+
